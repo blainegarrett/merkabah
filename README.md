@@ -3,4 +3,5 @@ merkabah
 
 Merkabah GAE Framework
 
-sdf
+Used in blainegarrett.com and dimmedia.com
+
