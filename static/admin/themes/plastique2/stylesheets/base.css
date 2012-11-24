@@ -1,0 +1,21 @@
+/* line 3, base.css.scss */
+* {
+  margin: 0px;
+  padding: 0px;
+  text-decoration: none;
+  outline: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+/* line 16, base.css.scss */
+body {
+  font: normal 12px HelveticaNeue, Helvetica, Arial; }
+
+/* line 21, base.css.scss */
+a {
+  cursor: pointer; }
+
+/* line 26, base.css.scss */
+a:hover {
+  text-decoration: none; }

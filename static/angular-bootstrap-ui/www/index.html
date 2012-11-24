@@ -1,0 +1,115 @@
+<!doctype html>
+<html ng-app="angularBootstrap">
+<head>
+	<title>Angular Bootstrap UI</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script src="http://code.angularjs.org/1.0.0/angular-1.0.0.js"></script>
+	<script src="../compiled/angular-bootstrap-with-scripts.js"></script>
+	<script src="demo.js"></script>
+</head>
+<body ng-controller="MainCtrl" ng-init="modalShown = false">
+	<div class="container">
+		<div class="hero-unit">
+			<center>
+				<h2>angular-bootstrap-ui</h2>
+				<p>AngularJS Directives for Bootstrap UI</p>
+				<a class="btn btn-large" href="https://github.com/ajoslin/angular-bootstrap-ui"><i class="icon-share-alt"></i> github:ajoslin/angular-bootstrap-ui</a>
+			</center>
+		</div>
+		<hr />
+		<h1>Modal</h1>
+		<div class="row">
+			<div class="span6">
+				<p>Modal is declared just like bootstrap modal, except it allows you to bind an ng-model to the modal,
+					which is true/false depending on if the modal is open.</p>
+					<br />
+					<p>You can either open and close the modal the old bootstrap way (data-toggle/data-dismiss and href), or by setting the ng-model to true/false</p>
+					<br />
+					<p>The ng-model will always represent whether the modal is currently open or not.</p>
+			</div>
+			<div class="span6">
+				<h4>$scope.modalShown = {{modalShown}}</h4>
+				<br />
+				<button class="btn" ng-click="modalShown = !modalShown">Toggle Modal: Set $scope.modalShown to {{!modalShown}}</button>
+				<br /><br />
+				<a href="#myModal" class="btn" data-toggle="modal">Toggle Modal: Use bootstrap data-toggle/href</a>
+
+				<!--
+				MODAL
+				-->
+				<div id="myModal" class="modal hide fade" ng-model="modalShown">
+					<div class="modal-header">
+						<a class="close" data-dismiss="modal" href="myModal">x</a>
+						<h3>Modal header</h3>
+					</div>
+					<div class="modal-body">
+						<p>One fine body!</p>
+					</div>
+					<div class="modal-footer">
+						<a class="btn btn-primary" data-dismiss="modal" href="#myModal">Close with data-dismiss</a>
+						<a class="btn btn-primary" ng-click="$parent.modalShown = false">Close with Scope Variable</a>
+					</div>
+				</div>
+			</div><!--/span6-->
+		</div><!--/row-->
+		<hr />
+		<h1>Tabs</h1>
+		<div class="row">
+			<div class="span6">
+				Hello.
+			</div>
+			<div class="span6">
+				<!--
+				TABS
+				-->
+				<strap-tabs>
+					<div class="well">
+						<strap-tab title="'Static Tab'">Hello! <b>Cool</b></strap-tab>
+						<strap-tab title="'Another Static Tab'"><i>Woah!</i></strap-tab>
+						<strap-tab ng-repeat="tab in $parent.Tabular" title="'Dynamic Tab '+tab.title">{{tab.content}}</strap-tab>
+					</div>
+				</strap-tabs>
+				<br />
+				<form ng-init="Tabular=[]" ng-submit="Tabular.push({title: tabTitle, content: tabContent})">
+					<input placeholder="Title" ng-model="tabTitle">
+					<input placeholder="Content" ng-model="tabContent">
+					<button type="submit" class="btn btn-primary">Add Tab!</button>
+				</form>
+				<br />
+				<h5 ng-show="Tabular.length>0">Current Dynamic Tabs:</h5>
+				<div ng-repeat="tab in Tabular">
+					<input ng-model="tab.title"><input ng-model="tab.content"><button class="btn btn-danger" ng-click="Tabular.splice($index, 1);">Remove</button>
+					<br />
+				</div>
+			</div><!--/span6-->
+		</div><!--/row-->
+		<hr />
+		<h1>Popover</h1>
+		<div class="row">
+			<div class="span6">
+				<br />
+				This is a bit different from bootstrap's normal popover.
+				<br /><br />
+				Instead of a simple title and content, you can have anything you want inside the popover.
+				<br /><br />
+				The popover is fully controlled by attributes from the popup invoker element: the placement, the event, even the spacing.
+				<br />
+			</div>
+			<div class="span6">
+				<strap-popover id="poppy" title="'hello!'">
+					<b>You can do anything you want inside the popover? Cool!</b>
+					<input ng-model="poppyValue" ng-init="poppyValue = 'splendid!'">
+					<br />=> {{poppyValue}}
+				</strap-popover>
+				<a class="btn" pop-target="#poppy" pop-event="hover" pop-placement="top">event='hover', placement='top'</a>
+				<br /><br />
+				<input style="width: 300px;"pop-target="#poppy" pop-event="focus" pop-placement="left" pop-margin="50" value="event='focus', placement='left', margin='50'">
+				<br /><br />
+				<a class="btn" pop-target="#poppy" pop-event="click" pop-placement="right">event='click', placement='right'</a>
+			</div>
+		</div>
+		<hr />
+	</div><!--/container-->
+</body>
+</html>

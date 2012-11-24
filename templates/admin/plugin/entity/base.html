@@ -1,0 +1,35 @@
+
+<div class="box">
+	<div class="tab-header">Blog Entries </div>
+	
+	<div class="padded">
+		<a href="/madmin/blog/add/" class="button blue">Add Blog Entry</a>
+	</div>
+	
+	<!-- start grid -->
+	
+	<table class="table table-striped">
+		<thead>
+			<tr>
+			  	<th>Title</th>
+			  	<th>Slug</th>
+			  	<th>Created</th>
+			  	<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for post in posts %}
+				<tr class="gradeX">
+				  <td>{{post.title}}</td>
+				  <td>{{post.slug}}</td>
+				  <td>{{post.created_date}}</td>
+				  <td class="center">
+						<a href="/madmin/blog/{{post.key.urlsafe}}/edit/" class="button">Edit</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+	<!-- end grid -->
+</div>

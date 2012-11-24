@@ -1,0 +1,17 @@
+
+<div class="box">
+	<div class="tab-header">{{ form_type }} {{ plugin_name }}</div>
+	
+	<form class="fill-up" method="post">
+
+		{{ form }}
+
+		{% csrf_token %}
+
+		<div class="form-actions">
+			<button type="submit" class="button blue">Save changes</button>
+			{% comment %} <a type="button" href="{% url merkabah_admin_plugin_kind_index plugin_key, kind_key %}" class="button">Cancel</a> {% endcomment %}
+		</div>
+		
+	</form>
+</div>

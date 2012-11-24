@@ -1,0 +1,19 @@
+<!-- start grid -->
+
+<table class="table table-striped">
+	<thead>
+		<tr>
+			
+			{% for column in columns %}
+		  		<th>{{ column.name }}</th>
+			{% endfor %}
+
+		</tr>
+	</thead>
+	<tbody>
+	    {% for row in rows %}
+	      	{% include 'merkabah/admin/datatable/row.html' %}
+        {% endfor %}
+	</tbody>
+</table>
+<!-- end grid -->
