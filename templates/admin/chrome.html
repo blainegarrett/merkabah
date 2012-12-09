@@ -248,5 +248,87 @@
     prettyPrint()
 </script>
 
+<script>
+var merkabah = {}
+merkabah.utils = {}
+merkabah.utils.parse_query_params = function(query_string){
+	/* Thank you Andy E - http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values */
+	var urlParams = {};
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+
+    while (match = search.exec(query_string))
+       urlParams[decode(match[1])] = decode(match[2]);
+
+	return urlParams;
+};
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+$(function(){
+	
+	merkabah.run_action = {};
+	merkabah.run_action.error_message = 'We are experiencing technical difficulties. Please try again momentarily.';
+	merkabah.run_action.execute = function(settings) {
+		
+		url ='/madmin/'
+		settings = {
+			'type' : 'post',
+			'csrfmiddlewaretoken' : csrftoken,
+			crossDomain: false, // obviates need for sameOrigin test
+			    beforeSend: function(xhr, settings) {
+				alert('samsquanch')
+			        //if (!csrfSafeMethod(settings.type)) {
+			            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			        //}
+			    }
+		};
+		
+		$.ajax(url, settings);
+		
+	}
+
+	
+	
+	
+	
+	/* Bind action buttons, links, etc */
+	$('.action').click(function(e){
+		e.preventDefault();
+		var btn = this;
+		var $btn = $(this);
+		var query_string = btn.search;
+		
+		if (query_string.length >= 1 && query_string[0] == '?')
+			query_string = query_string.substring(1);
+		
+		q_params = merkabah.utils.parse_query_params(query_string);		
+		merkabah.run_action.execute(q_params);
+		
+		return false
+	});
+
+});
+
+</script>
+
 </body>
 </html>

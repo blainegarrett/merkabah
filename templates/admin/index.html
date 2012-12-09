@@ -3,5 +3,29 @@
 	
 	<div class="padded">
 		Welcome to the merkabah admin...
+		
+		<style>
+		.btn-text {
+			padding-left : 3px;
+		}
+		</style>
+		
+		<div class="btn-group">
+		  <a class="btn btn-primary action" href="/?action=yodal&amp;squirel=1"><span class="btn-icon icon-user"></span><span class="btn-text">Launch Window</span></a>
+		  <a class="btn btn-success"><span class=" icon-circle-arrow-up"></span><span>2</span></a>
+		  <a class="btn"><span class="icon-user icon-white"></span><span>3</span></a>
+		</div>
+		
+        <a id="{{button.id}}" href="{{ button.data }}" class="action-button ui-widget ui-button ui-state-default{% if button.disabled %} ui-state-disabled{% endif %}{% if button.first %} ui-corner-left alpha{% endif %}{% if button.last %} ui-corner-right omega{% endif %}{% if button.text and button.icon %} ui-button-text-icon-primary{% endif %}{% if button.text and not button.icon %} ui-button-text-only{% endif %}{% if not button.text and button.icon %} ui-button-icon-only{% endif %}{% if button.primary %} ui-priority-primary{% endif %} {{ button.css|join:' ' }}"{% if button.attrs %} {{ button.attrs|join:' ' }}{% endif %}{% if button.title %} title="{{ button.title }}"{% endif %}>		
+			
+		</a>
+		
+		{% comment %}
+        <a id="{{button.id}}" href="{{ button.data }}" class="action-button ui-widget ui-button ui-state-default{% if button.disabled %} ui-state-disabled{% endif %}{% if button.first %} ui-corner-left alpha{% endif %}{% if button.last %} ui-corner-right omega{% endif %}{% if button.text and button.icon %} ui-button-text-icon-primary{% endif %}{% if button.text and not button.icon %} ui-button-text-only{% endif %}{% if not button.text and button.icon %} ui-button-icon-only{% endif %}{% if button.primary %} ui-priority-primary{% endif %} {{ button.css|join:' ' }}"{% if button.attrs %} {{ button.attrs|join:' ' }}{% endif %}{% if button.title %} title="{{ button.title }}"{% endif %}>
+          {% if button.icon %}<span class="ui-button-icon-primary ui-icon {{ button.icon }}"></span>{% endif %}
+          {% if button.text %}<span class="ui-button-text">{{ button.text }}</span>{% endif %}
+        </a>
+		{% endcomment %}
+		
 	</div>
 </div>

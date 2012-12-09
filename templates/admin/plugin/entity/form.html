@@ -2,7 +2,7 @@
 <div class="box">
 	<div class="tab-header">{{ form_type }} {{ plugin_name }}</div>
 	
-	<form class="fill-up" method="post">
+	<form class="fill-up" method="post" action="{{form_action_url}}" enctype="multipart/form-data">
 
 		{{ form }}
 

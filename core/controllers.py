@@ -6,8 +6,25 @@ import json
 
 import logging
 from merkabah.core.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 class MerkabahController(object):
+    '''
+    Controller Objectives
+    - allow interface for all major request types
+    - handle ajax responses
+    - handle security decorators
+    
+    - Build a angular controller with the name matching.
+    - Provide a list of api methods available
+    
+    '''
+    
+    def __init__(self, *args, **kwargs):
+        # Store our own name
+        self.controller_name = self.__class__.__name__
+        
+    
     chrome_template = 'base.html'
     require_login = False
     
@@ -23,6 +40,7 @@ class MerkabahController(object):
         
     @classmethod
     def as_view(cls, **initkwargs):
+        #@csrf_exempt
         def view(request, *args, **kwargs):
             kwargs['context'] = RequestContext(request, {'context_initialized' : True })
             return cls(**initkwargs).dispatch(request, *args, **kwargs)
@@ -32,15 +50,15 @@ class MerkabahController(object):
         raise Exception("%s requests are not allowed for %s" % (request.method.lower(), self))
         
     def method_not_allowed(self, request, *args, **kwargs):
-        logging.error('in method not allowed..')
+        #logging.error('in method not allowed..')
         self.log_method_not_allowed(request)
         allowed_methods = [m for m in self.method_names if hasattr(self, m)]
         return http.HttpResponseNotAllowed(allowed_methods)
                 
     def dispatch(self, request, *args, **kwargs):
         method_name = request.method.lower()
-        logging.error(kwargs)
-        logging.error('hhhhhhhhhhhhhh')
+        #logging.error(kwargs)
+        #logging.error('hhhhhhhhhhhhhh')
         if method_name in self.method_names:
             handler = getattr(self, method_name, self.method_not_allowed)
         else:
@@ -60,10 +78,10 @@ class MerkabahController(object):
     
     
     def get(self, request, *args, **kwargs):
-        logging.warning('in get...')
-        logging.warning(self.require_login)
+        #logging.warning('in get...')
+        #logging.warning(self.require_login)
         #raise Exception(self.require_login)
-        logging.warning(request.is_ajax())
+        #logging.warning(request.is_ajax())
         #return HttpResponse()
         context = kwargs.pop('context', {})
 
@@ -86,9 +104,9 @@ class MerkabahController(object):
                 return self.render_html(request, context, *args, **kwargs)
 
         # do any get request processing
-        logging.warning('still here...')
+        #logging.warning('still here...')
         response = self.processing_ajax(request, context, *args, **kwargs)
-        logging.error('!?!?!?!??')
+        #logging.error('!?!?!?!??')
         if response:
             return response
 
@@ -137,7 +155,7 @@ class MerkabahController(object):
     #@base_decorators.ajax_required
     #@base_decorators.ajax_response    
     def processing_ajax(self, request, context, *args, **kwargs):
-        logging.warning('inside of processing ajax')
+        #logging.warning('inside of processing ajax')
         return self.run_processing(request, context, *args, **kwargs)        
 
 
@@ -156,7 +174,7 @@ class MerkabahController(object):
             request_type = request.POST.get('request_type', None)
             action = request.POST.get('action', None)
 
-        logging.error('----------------%s' % action)
+        #logging.error('----------------%s' % action)
         # handle the incremental or reload update
         #if request_type == 'incremental':
         #    response = self.run_incremental(request, context, *args, **kwargs)
@@ -184,5 +202,5 @@ class MerkabahController(object):
     
     def get_ajax(self, request, context, *args, **kwargs):
         rendered_content = render_to_string(self.template, context)
-        json_return = json.dumps({'content' : rendered_content})
+        json_return = json.dumps({'content' : rendered_content, 'controller_name' : self.controller_name})
         return  HttpResponse(json_return)         
