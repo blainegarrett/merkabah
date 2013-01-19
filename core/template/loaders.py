@@ -10,6 +10,7 @@ def load_template_source(template_name, template_dirs=None):
         try:
             return open(template_name).read(), template_name
         except IOError:
+            logging.error(template_name)
             pass
     raise TemplateDoesNotExist, template_name
     

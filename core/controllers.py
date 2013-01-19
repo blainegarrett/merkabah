@@ -39,7 +39,7 @@ class MerkabahController(object):
         return None
         
     @classmethod
-    def as_view(cls, **initkwargs):
+    def as_django_view(cls, **initkwargs):
         #@csrf_exempt
         def view(request, *args, **kwargs):
             kwargs['context'] = RequestContext(request, {'context_initialized' : True })
@@ -72,7 +72,7 @@ class MerkabahController(object):
     def render_html(self, request, context, *args, **kwargs):
         rendered_content = render_to_string(self.template, context)
         chrome_context = context
-        chrome_context.update({'body_content' : rendered_content})
+        chrome_context.update({'body_content' : rendered_content, 'controller' : self})
         rendered_chrome = render_to_string(self.chrome_template, chrome_context)
         return HttpResponse(rendered_chrome)        
     
@@ -203,4 +203,14 @@ class MerkabahController(object):
     def get_ajax(self, request, context, *args, **kwargs):
         rendered_content = render_to_string(self.template, context)
         json_return = json.dumps({'content' : rendered_content, 'controller_name' : self.controller_name})
-        return  HttpResponse(json_return)         
+        return  HttpResponse(json_return)
+    
+    #######################################################
+    # Utility and debug methods 
+    #######################################################
+    def get_class_name(self):
+        return self.__class__.__name__
+
+    def get_class_path(self):
+        return self.__class__
+        

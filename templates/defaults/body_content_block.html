@@ -1,0 +1,49 @@
+{% comment %}Content to display when body_content block is not defined in the app {% endcomment %}
+
+{% include "merkabah/defaults/menu.html" %}
+
+<div class="hero-unit">
+	<h1>Setup Error</h1>
+    <p>You are seeing this bit of content because you did not correctly setup your base.html template. Luckily, the 
+	fix is simple.</p>
+	
+	<h3>How To Fix</h3>
+	<p>
+		The controller <tt>{{ controller.get_class_name }}</tt> defined in <tt>{{ controller.get_class_path }}</tt> is 
+		attempting to use <tt>{{ controller.chrome_template }}</tt> for its layout chrome. If you do not have your 
+		own <tt>{{ controller.chrome_template }}</tt> defined in your template directory, add it. Depending on your 
+		setup, this will probably be in <tt>home/templates/base.html</tt> or <tt>templates/base.html</tt>
+	</p>
+	
+	
+	<p>Here is a sample base.html for you to use:</p>
+
+	<pre>
+{% templatetag openblock %} extends "merkabah/base.html" {% templatetag closeblock %}
+{% templatetag openblock %} block head_content {% templatetag closeblock %}
+	&lt;!-- content to be added to the html HEAD tag --&gt;	
+	&lt;meta charset="UTF-8"&gt;
+	&lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+	&lt;link href="/static/themes/default/css/core.css" rel="stylesheet" /&gt;
+	&lt;link href="http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css" /&gt;
+	&lt;link href="http://fonts.googleapis.com/css?family=Limelight" rel="stylesheet" type="text/css" /&gt;
+	
+	&lt;!-- Le HTML5 shim, for IE6-8 support of HTML5 elements --&gt;
+	&lt;!--[if lt IE 9]&gt;
+  	&lt;script src="http://html5shim.googlecode.com/svn/trunk/html5.js"&gt;&lt;/script&gt;
+	&lt;![endif]--&gt;
+{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+{% templatetag openblock %} block body_content {% templatetag closeblock %}
+	&lt;!-- content to be added to the html BODY tag --&gt;	
+	&lt;h1&gt;My Site&lt;/h1&gt;
+	&lt;!-- start wrapper --&gt;
+	&lt;div ng-view id="body_content"&gt;
+	
+	{% templatetag openvariable %} body_content|safe {% templatetag closevariable %}
+	&lt;/div&gt;
+	&lt;!-- end wrapper --&gt;
+{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+</pre>
+</div>
