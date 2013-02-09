@@ -2,6 +2,6 @@
 .. module:: merkabah
    :synopsis:
 
-.. moduleauthor:: Blaine Garrett <blaine.garrett@webfilings.com>
+.. moduleauthor:: Blaine Garrett <blaine@blainegarrett.com>
 
 """
