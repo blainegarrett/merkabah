@@ -1,8 +1,13 @@
 <div class="box">
-	<div class="tab-header">{{ plugin_name }}</div>
+	<div class="tab-header">{{ plugin.name }}</div>
 	
-	
-	
-	
+	<div class="container">
+		<div class="span6">
+			<a href="{% url admin_plugin_action plugin_slug, 'create' %}" class="button blue">Create</a>
+		</div>
+		<div class="span6"></div>
+	</div>
+
+	{{ grid|safe }}
 	
 </div>

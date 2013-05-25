@@ -32,3 +32,11 @@ def carousel():
     rendered_content = render_to_string("homepage_carousel.html", context)
     
     return rendered_content
+    
+
+
+@register.filter
+def truncate(val, arg):
+    if len(val) > arg - 3:
+        return val[0:arg-1] + '...'
+    return val

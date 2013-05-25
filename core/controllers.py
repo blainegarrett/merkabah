@@ -6,16 +6,63 @@ import json
 from merkabah.core.auth.decorators import login_required
 #from django.views.decorators.csrf import csrf_exempt
 
+class BaseResponse(object):
+    def __init__(self, *args, **kwargs):
+        self.response_dict = {}
+    
+    def get_response(self):
+        self.response_dict = {'response_type': self.response_type}
+        self.populate_response()
+        return HttpResponse(json.dumps(self.response_dict))
+        
 
+class AlertResponse(BaseResponse):
+    response_type = 'alert'
+    def __init__(self, *args, **kwargs):
+        self.message = args[0]
+    
+    def populate_response(self):
+        self.response_dict['message'] = self.message
+
+
+class ErrorResponse(BaseResponse):
+    response_type = 'error'
+    def __init__(self, *args, **kwargs):
+        self.content = args[0]
+
+    def populate_response(self):
+        self.response_dict['content'] = self.content
+
+class RedirectResponse(BaseResponse):
+    response_type = 'redirect'
+
+    def __init__(self, *args, **kwargs):
+        self.url = args[0]
+    
+    def populate_response(self):
+        self.response_dict['url'] = self.url
+
+class DialogResponse(BaseResponse):
+    response_type = 'dialog'
+
+    def __init__(self, title, content, *args, **kwargs):
+        self.title = title
+        self.content = content
+
+    def populate_response(self):
+        self.response_dict['content'] = self.content
+        self.response_dict['title'] = self.title
+
+    
 class MerkabahController(object):
-    '''
+    """
     Controller Objectives
     - allow interface for all major request types
     - handle ajax responses
     - handle security decorators
     - Build a angular controller with the name matching.
     - Provide a list of api methods available
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         # Store our own name
@@ -37,12 +84,17 @@ class MerkabahController(object):
 
     @classmethod
     def as_django_view(cls, **initkwargs):
-
-        #@csrf_exempt
+        """
+        Generates a django view container for controller
+        """
         def view(request, *args, **kwargs):
             kwargs['context'] = RequestContext(request, {'context_initialized': True})
             return cls(**initkwargs).dispatch(request, *args, **kwargs)
         return view
+
+    @classmethod
+    def django_url_args(cls, **initkwargs):
+        return [cls.as_django_view(), {'name' : cls.view_name}]
 
     def log_method_not_allowed(self, request):
         raise Exception("%s requests are not allowed for %s" % (request.method.lower(), self))
@@ -53,7 +105,7 @@ class MerkabahController(object):
         return HttpResponseNotAllowed(allowed_methods)
 
     def dispatch(self, request, *args, **kwargs):
-        method_name = request.method.lower()
+        method_name = request.method.lower() # get, post, etc
         if method_name in self.method_names:
             handler = getattr(self, method_name, self.method_not_allowed)
         else:
@@ -65,6 +117,9 @@ class MerkabahController(object):
         return self.render_html(request, context, *args, **kwargs)
 
     def render_html(self, request, context, *args, **kwargs):
+        """
+        Render the HTML
+        """
         rendered_content = render_to_string(self.template, context)
         chrome_context = context
         chrome_context.update({'content_title': self.content_title, 'body_content': rendered_content,
@@ -130,7 +185,9 @@ class MerkabahController(object):
                 return self.render_html(request, context, *args, **kwargs)
 
             # otherwise do the ajax content
-            return self.render_ajax(request, context, *args, **kwargs)
+            #return self.render_ajax(request, context, *args, **kwargs)
+            response = self.processing_ajax(request, context, *args, **kwargs)
+            return response
 
         # do secure processing
         return secure_post(request, *args, **kwargs)
@@ -172,6 +229,8 @@ class MerkabahController(object):
         if attr and callable(attr):
             response = attr(request, context, *args, **kwargs)
             if response:
+                if isinstance(response, BaseResponse):
+                    return response.get_response()
                 return response
 
         # no response so return the ajax

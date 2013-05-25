@@ -1,0 +1,12 @@
+<!-- this is the chrome for the plugin -->
+{% if plugin_content %}
+	{{ plugin_content|safe }}
+{% else %}
+	<div class="box">
+		<div class="tab-header">Failed to load plugin</div>
+	
+		<div class="padded">
+			{{ error }}
+		</div>
+	</div>
+{% endif %}

@@ -6,10 +6,16 @@ from django.http import HttpResponseRedirect
 
 @decorators.decorator
 def login_required(f, *args, **kwargs):
+    """
+    Simple Decorator to require login
+    """
+    # TODO: urlescape the return path, etc
+    return_url = args[1].META['PATH_INFO'] + '?'+ args[1].META['QUERY_STRING']
+
     guser = gusers.get_current_user()
-    
+
     if not guser:
-        return HttpResponseRedirect(gusers.create_login_url("/?from_login=Yep"))
+        return HttpResponseRedirect(gusers.create_login_url(return_url))
         #raise AuthenticationRequired('Could not retrieve a Google User. Please Login. ')
     
     return f(*args, **kwargs)
