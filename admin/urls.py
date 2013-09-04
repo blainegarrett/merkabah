@@ -1,3 +1,6 @@
+"""
+Merkabah Admin Urls
+"""
 from django.conf.urls.defaults import *
 from merkabah.admin import controllers as ac
 

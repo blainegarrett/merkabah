@@ -1,6 +1,7 @@
 """
 Merkabah Base Settings
 """
+
 import os.path
 ROOT_URLCONF = 'urls'
 DEBUG=True

@@ -1,9 +1,21 @@
-'''
-MERKABAH FILE UTILITIES
-'''
+"""
+.. module:: merkabah.core.files
+   :synopsis: Contains a set of helpers for working with blobs and files
+
+.. moduleauthor:: Blaine Garrett <blaine@blainegarrett.com>
+
+"""
+
 from google.appengine.ext import blobstore
 
 def create_upload_url(url):
+    """Grabs the gae_lib_path from the options and inserts it into the first
+    index of the sys.path. Then calls GAE's fix_sys_path to get all the proper
+    GAE paths included.
+
+    :param url: asdf sd;flksdfl;ksdf sdfds
+    """
+
     return blobstore.create_upload_url(url)
 
 def get_uploads(request, field_name=None, populate_post=False):
