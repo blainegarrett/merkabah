@@ -8,7 +8,7 @@ def load_template_source(template_name, template_dirs=None):
     '''
     
     if (template_name.find('merkabah/') == 0):
-        template_name = '%stemplates/%s' % (settings.MERKAHBAH_PATH, template_name[9:])
+        template_name = '%stemplates/%s' % (settings.MERKABAH_PATH, template_name[9:])
         
         logging.warning(template_name)
         

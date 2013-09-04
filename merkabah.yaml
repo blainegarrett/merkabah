@@ -1,7 +1,4 @@
 handlers:
-- url: /merkabah/static
-  static_dir: lib/merkabah/static
-  secure: optional
 
 - url: /_ah/queue/async.*
   script: furious.handlers.webapp.app
