@@ -1,7 +1,15 @@
-'''
+"""
 MERKABAH FILE UTILITIES
-'''
+
+This provides a wrapper around the file storage so it is more transparent
+"""
+import logging
+import settings
+from django import http
+from google.appengine.api import urlfetch
+
 from google.appengine.ext import blobstore
+import cloudstorage as gcs
 
 def create_upload_url(url):
     return blobstore.create_upload_url(url)
@@ -30,12 +38,19 @@ def get_uploads(request, field_name=None, populate_post=False):
         
         for key in fields.keys():
             field = fields[key]
+            
+            logging.warning(field.type_options)
+
             if isinstance(field, cgi.FieldStorage) and 'blob-key' in field.type_options:
-                blob_info = blobstore.parse_blob_info(field)
+                # TODO: Differentiate between cloudstorage and blogstore 'blob-key': 'encoded_gs_file:....'                
+
+                fileinfo_info = blobstore.parse_file_info(field)
                 
-                request.__uploads.setdefault(key, []).append(blob_info)
+                logging.warning(fileinfo_info)
+
+                request.__uploads.setdefault(key, []).append(fileinfo_info)
                 if populate_post:
-                    request.POST[key] = [str(blob_info.key())]
+                    request.POST[key] = [str(fileinfo_info.gs_object_name)]
                 
             elif populate_post:
                 request.POST[key] = []
@@ -55,6 +70,60 @@ def get_uploads(request, field_name=None, populate_post=False):
         for uploads in request.__uploads.itervalues():
             results += uploads
         return results
+
+
+
+'''
+def get_uploads(request, field_name=None, populate_post=False):
+    import logging
+    from google.appengine.ext import blobstore            
+    import cgi
+    """Get uploads sent to this handler.
+    Args:
+      field_name: Only select uploads that were sent as a specific field.
+      populate_post: Add the non blob fields to request.POST
+    Returns:
+      A list of BlobInfo records corresponding to each upload.
+      Empty list if there are no blob-info records for field_name.
+      http://pastebin.com/9haziPhd
+    """
+
+    if hasattr(request,'__uploads') == False:
+        request.META['wsgi.input'].seek(0)
+        fields = cgi.FieldStorage(request.META['wsgi.input'], environ=request.META)
+
+        request.__uploads = {}
+        if populate_post:
+            request.POST = {}
+
+        for key in fields.keys():
+            field = fields[key]
+            if isinstance(field, cgi.FieldStorage) and 'blob-key' in field.type_options:
+                blob_info = blobstore.parse_blob_info(field)
+
+                request.__uploads.setdefault(key, []).append(blob_info)
+                if populate_post:
+                    request.POST[key] = [str(blob_info.key())]
+
+            elif populate_post:
+                request.POST[key] = []
+                if isinstance(field, list):                
+                    for item in field:
+                        request.POST[key].append(item.value)
+                else:
+                    request.POST[key] = [field.value]
+
+    if field_name:
+        try:
+            return list(request.__uploads[field_name])
+        except KeyError:
+            return []
+    else:
+        results = []
+        for uploads in request.__uploads.itervalues():
+            results += uploads
+        return results
+'''
 
 def rescale(img_data, width, height, halign='middle', valign='middle'):
   from google.appengine.api import images
@@ -101,7 +170,149 @@ def rescale(img_data, width, height, halign='middle', valign='middle'):
   return image.execute_transforms()
 
 
-def fetch_image(url):
+def delete_file(filename):
+    try:
+      gcs.delete(filename)
+    except gcs.NotFoundError:
+      pass
+
+
+def read_file(filename):
+    blob_concat = ""
+    
+    gcs_file = gcs.open(filename)
+    return gcs_file.read()
+
+def read_blob(blob_key):
+    """
+    Read a blob given
+    """
+
+    blob_info = blobstore.BlobInfo.get(blob_key)
+    if not blob_info:
+        raise Exception('Blob Key does not exist: %s' % blob_key)
+
+    blob_file_size = blob_info.size
+
+    blob_concat = ""
+    start = 0
+    end = blobstore.MAX_BLOB_FETCH_SIZE - 1
+    step = blobstore.MAX_BLOB_FETCH_SIZE - 1
+
+    while(start < blob_file_size):
+        blob_concat += blobstore.fetch_data(blob_key, start, end)
+        temp_end = end
+        start = temp_end + 1
+        end = temp_end + step
+    return blob_concat
+    
+
+def fetch_file(url):
+    """
+    Method to import a file and write it to designated file storage
+    """
+
+
+    # Set our api key
+    gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
+    
+    file_api_class = Cloudstorage
+
+    dest_filename = file_api_class.make_filename(url)
+
+    # Step 1: Fetch the url
+    rpc = urlfetch.create_rpc()
+    urlfetch.make_fetch_call(rpc, url)
+    result = rpc.get_result()
+    status = result.status_code
+
+    if not status == 200:
+        raise Exception("Attempted to fetch url %s and received status code %s" % (url, status))
+    
+    # Step 2: Create 
+    data = result.content
+    content_type = result.headers.get('content-type', None)
+    
+    dest_filename = Cloudstorage.make_filename(url)
+
+    return file_api_class.write_file(dest_filename, data, content_type)
+
+def make_thumbnail(url):
+    """
+    Method to import a file and write it to designated file storage
+    """
+    
+    # Set our api key
+    gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
+    
+    file_api_class = Cloudstorage
+
+    dest_filename = file_api_class.make_filename(url, prefix='thumbs/')
+
+    # Step 1: Fetch the url
+    rpc = urlfetch.create_rpc()
+    urlfetch.make_fetch_call(rpc, url)
+    result = rpc.get_result()
+    status = result.status_code
+
+    if not status == 200:
+        raise Exception("Attempted to fetch url %s and received status code %s" % (url, status))
+    
+    # Step 2: Create 
+    data = result.content
+    
+    data = rescale(data, 300, 500)
+
+    content_type = result.headers.get('content-type', None)
+
+    return file_api_class.write_file(dest_filename, data, content_type)    
+
+
+class Cloudstorage(object):
+
+    @staticmethod
+    def make_filename(source_filename, prefix=None):
+        """
+        
+        """
+
+        filename = source_filename.split('/')[-1]
+        filename = filename.lower()
+        filename = filename.replace(' ', '_')
+
+        bucket = '/dim-media'
+        
+        if prefix:
+            filename = "%s%s" % (prefix, filename)
+
+        filename = bucket + '/sdk/%s' % filename
+
+        return filename        
+    
+    @staticmethod
+    def write_file(filename, data, content_type):
+        """
+        """
+        gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
+
+        logging.error(filename)
+        write_retry_params = gcs.RetryParams(backoff_factor=1.1)
+        gcs_file = gcs.open(filename,
+                            'w',
+                            content_type=content_type,
+                            options={'x-goog-acl': 'public-read',
+                                     'x-goog-meta-writer': 'merkabah'},
+                            retry_params=write_retry_params)
+
+        gcs_file.write(data)
+        gcs_file.close()
+        return filename
+
+
+
+
+'''
+def fetch_file(url):
     """
     Method to import and item from a remote source and put it into blobstore
     """
@@ -133,6 +344,7 @@ def fetch_image(url):
 
         return blob_key
 
+'''
 
 '''
 def send_blob(request, blob_key_or_info, content_type=None, save_as=None):

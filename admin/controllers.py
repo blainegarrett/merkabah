@@ -108,10 +108,11 @@ class PluginBaseCtrl(MerkabahAdminBaseController):
         # Process response...
         result = action_method(request, context, *args, **kwargs)
 
-        if isinstance(result, basestring) or isinstance(result, TemplateResponse):
-            context['plugin_content'] = result
-            return
-        raise Exception('Plugin result is of type %s', type(result))
+        #if isinstance(result, basestring) or isinstance(result, TemplateResponse):
+        #    context['plugin_content'] = result
+        #    return
+        #raise Exception('Plugin result is of type %s', type(result))
+        context['plugin_content'] = result
 
     def process_request(self, request, context, *args, **kwargs):
         """

@@ -10,7 +10,8 @@
 		<link href="/merkabah/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet" />		
 		
         {% block head_content %}
-            
+			<script src="/merkabah/static/js/jquery.min.js"></script>
+			<script src="/merkabah/static/bootstrap/js/bootstrap.js"></script>            
         {% endblock %}
     </head>
     <body ng-controller="MainCtrl">
@@ -18,9 +19,10 @@
 			{% include "merkabah/defaults/body_content_block.html" %}
         {% endblock %}
 
-        <script src="/merkabah/static/js/jquery.min.js"></script>
+        <!-- 
+		<script src="/merkabah/static/js/jquery.min.js"></script>
 		<script src="/merkabah/static/bootstrap/js/bootstrap.js"></script>
-
+		-->
 		{% comment %}
 		Remove all this once we get angular working
 <!--
