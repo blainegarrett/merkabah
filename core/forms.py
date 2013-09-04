@@ -1,3 +1,7 @@
+"""
+Fishbat
+"""
+
 from django import forms
 from django.utils.html import conditional_escape
 from django.utils.encoding import StrAndUnicode, smart_unicode, force_unicode

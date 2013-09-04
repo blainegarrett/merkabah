@@ -1,6 +1,8 @@
-'''
-Pre-described urls
-'''
+"""
+Merkabah Urls
+"""
+
+
 from __future__ import absolute_import
 import settings
 from django.conf.urls.defaults import *

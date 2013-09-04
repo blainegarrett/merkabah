@@ -1,3 +1,11 @@
+"""
+.. module:: merkabah.core.controllers
+   :synopsis: Contains classes for controllers
+
+.. moduleauthor:: Blaine Garrett <blaine@blainegarrett.com>
+
+"""
+
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseNotAllowed

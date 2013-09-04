@@ -1,17 +1,21 @@
 """
-MERKABAH FILE UTILITIES
-
 This provides a wrapper around the file storage so it is more transparent
 """
 import logging
 import settings
 from django import http
 from google.appengine.api import urlfetch
-
 from google.appengine.ext import blobstore
 import cloudstorage as gcs
 
 def create_upload_url(url):
+    """Grabs the gae_lib_path from the options and inserts it into the first
+    index of the sys.path. Then calls GAE's fix_sys_path to get all the proper
+    GAE paths included.
+
+    :param url: asdf sd;flksdfl;ksdf sdfds
+    """
+
     return blobstore.create_upload_url(url)
 
 def get_uploads(request, field_name=None, populate_post=False):
