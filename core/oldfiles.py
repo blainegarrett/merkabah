@@ -218,7 +218,7 @@ def fetch_file(url):
 
 
     # Set our api key
-    gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
+    #gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
     
     file_api_class = Cloudstorage
 
@@ -247,7 +247,7 @@ def make_thumbnail(url):
     """
     
     # Set our api key
-    gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
+    #gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
     
     file_api_class = Cloudstorage
 
@@ -297,7 +297,7 @@ class Cloudstorage(object):
     def write_file(filename, data, content_type):
         """
         """
-        gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
+        #gcs.common.set_access_token(settings.GOOGLE_API_TOKEN)
 
         logging.error(filename)
         write_retry_params = gcs.RetryParams(backoff_factor=1.1)
