@@ -5,7 +5,11 @@ A collection of controllers used for administration of the the Merkabah install
 #from django.shortcuts import render_to_response
 #from django.shortcuts import redirect
 #from django.template import RequestContext
+from merkabah.core.controllers import MerkabahDjangoController
+
 from merkabah.core import controllers as merkabah_controllers
+
+
 #from google.appengine.api import users
 #from google.appengine.ext import ndb
 #from django.core import urlresolvers
@@ -16,7 +20,7 @@ import settings
 class PluginLoadingFailed(Exception):
     pass
 
-class MerkabahAdminBaseController(merkabah_controllers.MerkabahController):
+class MerkabahAdminBaseController(MerkabahDjangoController):
     """
     Base Controller for Merkabah Admin panel
 

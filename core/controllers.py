@@ -145,6 +145,7 @@ class FormErrorResponse(BaseResponse):
         self.response_dict['form_id'] = self.id
         self.response_dict['form_errors'] = json.dumps(self.form.errors)
 
+
 class MerkabahController(object):
     """
     Controller Objectives
@@ -171,26 +172,6 @@ class MerkabahController(object):
         and return a response if something doesn't validate.
         """
         return None
-
-    @classmethod
-    def as_django_view(cls, **initkwargs):
-        """
-        Generates a django view container for controller.
-        This is useful when using django urls.
-        """
-
-        def view(request, *args, **kwargs):
-            kwargs['context'] = RequestContext(request, {'context_initialized': True})
-            return cls(**initkwargs).dispatch(request, *args, **kwargs)
-        return view
-
-    @classmethod
-    def django_url_args(cls, **initkwargs):
-        """
-        Return a tuple of django url args
-        """
-
-        return [cls.as_django_view(), {'name' : cls.view_name}]
 
     '''
     def log_method_not_allowed(self, request):
@@ -369,3 +350,29 @@ class MerkabahController(object):
 
     def get_class_path(self):
         return self.__class__
+
+
+class MerkabahDjangoController(MerkabahController):
+    """
+    Wrapper Class for Django Implementation
+    """
+
+    @classmethod
+    def as_django_view(cls, **initkwargs):
+        """
+        Generates a django view container for controller.
+        This is useful when using django urls.
+        """
+
+        def view(request, *args, **kwargs):
+            kwargs['context'] = RequestContext(request, {'context_initialized': True})
+            return cls(**initkwargs).dispatch(request, *args, **kwargs)
+        return view
+
+    @classmethod
+    def django_url_args(cls, **initkwargs):
+        """
+        Return a tuple of django url args
+        """
+
+        return [cls.as_django_view(), {'name' : cls.view_name}]
