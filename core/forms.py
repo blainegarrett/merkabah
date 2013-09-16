@@ -20,13 +20,15 @@ class MerkabahBaseForm(forms.Form):
             
     def as_table(self):
         return self.as_bootstrap()
-        
+
+
     def as_bootstrap(self):
         errors_on_separate_row = False
         
-        normal_row = u'%(label)s<div%(html_class_attr)s>%(field)s%(errors)s</div>'
+        normal_row = u'<div class="row-fluid"><div class="span2">%(label)s</div><div class="span10"><div%(html_class_attr)s>%(field)s%(errors)s</div></div></div>'
+        #normal_row = u'%(label)s<div%(html_class_attr)s>%(field)s%(errors)s</div>'
         #normal_row = u'<tr%(html_class_attr)s><th>%(label)s</th><td>%(errors)s%(field)s%(help_text)s</td></tr>'
-        
+
         error_row = u'<span class="input-error" data-title="%s"><i class="icon-warning-sign"></i></span>'
         row_ender = u'</div>'
         help_text_html = u'<br />%s'
@@ -38,8 +40,23 @@ class MerkabahBaseForm(forms.Form):
         output, hidden_fields = [], []
 
         for name, field in self.fields.items():
-            html_class_attr = ''
             bf = forms.forms.BoundField(self, field, name)
+            my_tpl = normal_row
+
+            if bf.label:
+                label = conditional_escape(force_unicode(bf.label))
+                # Only add the suffix if the label does not end in
+                # punctuation.
+                if self.label_suffix:
+                    if label[-1] not in ':?.!':
+                        label += self.label_suffix
+                label = bf.label_tag(label) or ''
+            else:
+                label = ''
+
+            html_class_attr = ''
+            #'placeholder'='Username'
+
             bf_errors = self.error_class([conditional_escape(error) for error in bf.errors]) # Escape and cache in local variable.
             if bf.is_hidden:
                 if bf_errors:
@@ -59,17 +76,6 @@ class MerkabahBaseForm(forms.Form):
 
                 if errors_on_separate_row and bf_errors:
                     output.append(error_row % force_unicode(bf_errors))
-
-                if bf.label:
-                    label = conditional_escape(force_unicode(bf.label))
-                    # Only add the suffix if the label does not end in
-                    # punctuation.
-                    if self.label_suffix:
-                        if label[-1] not in ':?.!':
-                            label += self.label_suffix
-                    label = bf.label_tag(label) or ''
-                else:
-                    label = ''
 
                 if field.help_text:
                     help_text = help_text_html % force_unicode(field.help_text)
@@ -115,5 +121,5 @@ class MerkabahBaseForm(forms.Form):
                 # hidden fields.
                 output.append(str_hidden)
         rendered = mark_safe(u'\n'.join(output))
-        wrapper = '<div class="row-fluid"><div class="span6"><div class="padded">%s</div></div></div>'
+        wrapper = '<div class="padded">%s</div>'
         return mark_safe(wrapper % rendered)

@@ -1,6 +1,9 @@
-<div class="box">
-	<div class="tab-header">{{ plugin.name }}</div>
+<style>
+.modal-body {
+	background:#F1F1F1;
+}
+</style>
 
-	{{ form|safe }}
-	
-</div>
+<form class="fill-up" action="" method="">
+	{{ form.as_bootstrap }}
+</form>
