@@ -155,15 +155,14 @@ class MerkabahController(object):
     - Provide a list of api methods available
     """
 
-    def __init__(self, *args, **kwargs):
-        # Store our own name
-        self.controller_name = self.__class__.__name__
-
     chrome_template = 'base.html'
     require_login = False
     content_title = ''
-
     method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace']
+
+    def __init__(self, *args, **kwargs):
+        # Store our own name
+        self.controller_name = self.__class__.__name__
 
     def process_request(self, request, context, *args, **kwargs):
         """
