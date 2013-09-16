@@ -172,13 +172,7 @@ $.fn.form_handler = function(data){
 	var submit_data = {'form_id': form_id, 'action' : action};
 	var ajax_settings = merkabah.get_ajax_form_settings(submit_data, 'get');
 	
-	//ajax_settings = {};
-	
-	console.log(ajax_settings);
-	
 	$('#' + form_id).ajaxForm(ajax_settings);
-
-	console.log(ajax_settings);
 }
 
 $.fn.dynamic_content_handler = function(data) {
@@ -187,7 +181,7 @@ $.fn.dynamic_content_handler = function(data) {
 	if (!node_id) {
 		alert('Node id ' + node_id + ' given, but doesn\'t exist in dom.')
 	}
-	
+
 	var target_node = $('#' + node_id);
 	if (!target_node.size()) {
 		console.log('Received a dynamic content response type with target id of "' + node_id + '" but failed to find the node in the existing dom.');
@@ -204,7 +198,7 @@ merkabah.get_ajax_form_settings = function(data, type) {
 	}
 
 	var csrftoken = getCookie('csrftoken');
-	console.log(csrftoken)
+	console.log(csrftoken);
 
 	var ajax_settings = {
 		'dataType' : 'json',
@@ -264,7 +258,6 @@ $.fn.form_error_handler = function(data){
 		input.addClass('error');
 
 		field_control_group = input.parents('.input');
-		console.log(field_control_group);
 		field_control_group.append('<span class="input-error" data-title="please write a valid username" data-original-title=""><i class="icon-warning-sign"></i></span>');
 
 	});
@@ -291,14 +284,14 @@ merkabah.ajax_success = function(data, textStatus, jqXHR){
 	
 	//var action_responses = data.action_responses;
 
-	var action_responses = data.response_type;
+	var action_responses = data.action_response_list;
 
-	action_responses = [action_responses]
+	//action_responses = action_responses
 
 	$.each(action_responses, function(i, action_response) {
+		var action_response = jQuery.parseJSON(action_response);
+		var response_handler_name = action_response.response_type; // data.response_type;
 
-
-		var response_handler_name = action_response // data.response_type;
 		if (response_handler_name) {
 			response_handler_name = response_handler_name + '_handler';
 
@@ -307,17 +300,15 @@ merkabah.ajax_success = function(data, textStatus, jqXHR){
 			if (!(response_handler)) {
 				data.title = 'Response Handler Error'
 				data.content = 'No response handler <b>' + response_handler_name + '</b> defined in $.fn.'
-				return $.fn.error_handler.apply(this, [data]);
+				return $.fn.error_handler.apply(this, [action_response]);
 			}
 			else {
-				return response_handler.apply(this, [data]);
+				return response_handler.apply(this, [action_response]);
 			}
 		
 		}
 		else {
 			alert('Action executed, but return did not contain a response_type param. See log.');
-			console.log(data)
-
 		}
 	}); // each
 }

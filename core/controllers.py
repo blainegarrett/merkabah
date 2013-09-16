@@ -12,7 +12,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 
-from merkabah.core.auth.decorators import login_required
+#from merkabah.core.auth.decorators import login_required
 
 class BaseResponse(object):
     """
@@ -31,7 +31,7 @@ class BaseResponse(object):
 
         self.response_dict = {'response_type': self.response_type}
         self.populate_response()
-        return HttpResponse(json.dumps(self.response_dict))
+        return json.dumps(self.response_dict)
         
 
 class AlertResponse(BaseResponse):
@@ -173,90 +173,21 @@ class MerkabahController(object):
         """
         return None
 
-    '''
-    def log_method_not_allowed(self, request):
-        raise Exception("%s requests are not allowed for %s" % (request.method.lower(), self))
-
-    def method_not_allowed(self, request, *args, **kwargs):
-        self.log_method_not_allowed(request)
-        allowed_methods = [m for m in self.method_names if hasattr(self, m)]
-        return HttpResponseNotAllowed(allowed_methods)
-    '''
-
     def dispatch(self, request, *args, **kwargs):
         """
         Dynamic handler... routes all allowed request types through here
-        """
-
-        response = self.post(request, *args, **kwargs)
-        #raise Exception(response)
-
-        return response
-
-        '''
-        method_name = request.method.lower() # get, post, etc
-        if method_name in self.method_names:
-            handler = getattr(self, method_name, self.method_not_allowed)
-        else:
-            handler = self.method_not_allowed
-        return handler(request, *args, **kwargs)
-        '''
-
-    @login_required
-    def render_secure(self, request, context, *args, **kwargs):
-        return self.render_html(request, context, *args, **kwargs)
-
-    def render_html(self, request, context, *args, **kwargs):
-        """
-        Render the HTML
-        """
-        rendered_content = render_to_string(self.template, context)
-        chrome_context = context
-        chrome_context.update({'content_title': self.content_title, 'body_content': rendered_content,
-            'controller': self})
-        rendered_chrome = render_to_string(self.chrome_template, chrome_context)
-        return HttpResponse(rendered_chrome)
-
-    def get(self, request, *args, **kwargs):
-        context = kwargs.pop('context', {})
-
-        # make sure we have enough access for the view
-        #reason = self.can_access(context, True)
-        #if reason:
-        #    return self.access_denied(request, context, reason, *args, **kwargs)
-
-        # allow the response to be shortcut before render
-        #context['meta'] = self.get_meta(request, context, *args, **kwargs)
-        response = self.process_request(request, context, *args, **kwargs)
-        if response:
-            return response
-
-        # do the html view
-        if not request.is_ajax():
-            if self.require_login:
-                return self.render_secure(request, context, *args, **kwargs)
-            else:
-                return self.render_html(request, context, *args, **kwargs)
-
-        # do any get request processing
-        response = self.processing_ajax(request, context, *args, **kwargs)
-        if response:
-            return response
-
-        # otherwise do the ajax content
-        return self.render_ajax(request, context, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        """
-        Do it!!
-        """
-
-        context = kwargs.pop('context', {})
-
-        # Run process_request - this may return nothing or a response
-        response = self.process_request(request, context, *args, **kwargs)
         
-        # If it is a template response and it is not ajax, spat it out
+        This returns a valid HttpRespponse
+        """
+
+        context = kwargs.pop('context', {})
+
+        # Check process response
+        response = self.process_request(request, context, *args, **kwargs)
+
+        # If it is a template response and it is not ajax, render it as a content body
+        #   it is likely a angular template url or a redrect, etc.
+
         if response:
             if isinstance(response, TemplateResponse):
                 # TODO: REFACTOR THIS
@@ -269,17 +200,24 @@ class MerkabahController(object):
                 return HttpResponse(rendered_chrome)
 
             else:
+                # if is_ajax():
+                # else: ...
+
+                # TODO: if ajax, return json list of responses
                 return response.get_response()
-            
 
-        #raise Exception(context['action'])
-
-        action = request.POST.get('action', None)
+        # Action based Responses
+        action = request.REQUEST.get('action', None)
+        if not action:
+            action = context.get('action', None)
+        
+        # There is an action to evaluate
         if action:
             attr = getattr(self, 'process_%s' % action, None)
             if attr and callable(attr):
                 response = attr(request, context, *args, **kwargs)
-
+            else:
+                raise Exception('Attempting to evaluate method %s' % action)
 
         # If not ajax - just render the output
         if not response and not request.is_ajax():
@@ -290,9 +228,31 @@ class MerkabahController(object):
         
         # If it is an instance of 
         if response:
-            if isinstance(response, BaseResponse):
-                return response.get_response()
+            if isinstance(response, (BaseResponse, list, tuple)):
+                if not isinstance(response, (list, tuple)):
+                    responses = [response]
+                else:
+                    responses = response
+
+                return_response_list = []
+                for r in responses:
+                    return_response_list.append(r.get_response())
+                return HttpResponse(json.dumps({'action_response_list' : return_response_list}))
+
+            return response.get_response()
         return response
+
+    def render_html(self, request, context, *args, **kwargs):
+        """
+        Render the HTML
+        """
+        rendered_content = render_to_string(self.template, context)
+        chrome_context = context
+        chrome_context.update({'content_title': self.content_title, 'body_content': rendered_content,
+            'controller': self})
+        rendered_chrome = render_to_string(self.chrome_template, chrome_context)
+        return HttpResponse(rendered_chrome)
+
 
     #@base_decorators.ajax_required
     #@base_decorators.ajax_response
