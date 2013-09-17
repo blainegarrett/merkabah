@@ -55,10 +55,6 @@ var merkabah = {};
 merkabah.utils = {};
 
 
-
-
-
-
 merkabah.render_form_dialog = function(url, form_id, form_content, dialog_title) {
 	
 	var dialog = $('<div id="modal_for_form_' + form_id + '" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">');
@@ -147,6 +143,20 @@ $.fn.dialog_handler = function(data){
 	$('.modal-body', dialog).html('').append(data.content);
 	$('#myModalLabel', dialog).html('').append(data.title);
 	$(dialog).modal('toggle');
+}
+
+$.fn.close_form_dialog_handler = function(data) {
+	/*
+	Close The Dialog
+	*/
+
+	console.log(data);
+
+	var form_id = data.form_id;
+	var dialog = $('#modal_for_form_' + form_id + '');
+
+	$(dialog).modal('hide');
+	
 }
 
 $.fn.form_handler = function(data){
@@ -287,14 +297,14 @@ merkabah.ajax_success = function(data, textStatus, jqXHR){
 	var action_responses = data.action_response_list;
 
 	//action_responses = action_responses
-
+	
 	$.each(action_responses, function(i, action_response) {
 		var action_response = jQuery.parseJSON(action_response);
 		var response_handler_name = action_response.response_type; // data.response_type;
 
 		if (response_handler_name) {
 			response_handler_name = response_handler_name + '_handler';
-
+			
 			response_handler = $.fn[response_handler_name];
 
 			if (!(response_handler)) {

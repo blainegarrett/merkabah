@@ -64,6 +64,15 @@ class RedirectResponse(BaseResponse):
     def populate_response(self):
         self.response_dict['url'] = self.url
 
+class CloseFormResponse(BaseResponse):
+    response_type = 'close_form_dialog'
+
+    def __init__(self, id):
+        self.id = id
+
+    def populate_response(self):
+        self.response_dict['form_id'] = self.id
+    
 class DialogResponse(BaseResponse):
     response_type = 'dialog'
 
@@ -128,7 +137,8 @@ class TemplateResponse(BaseResponse):
 
     def __str__(self):
         from django.template.loader import render_to_string
-        return render_to_string(self.template, self.context)
+        result = render_to_string(self.template, self.context)
+        return result
 
     def populate_response(self):
         self.response_dict['content'] = self.unicode()
@@ -200,11 +210,7 @@ class MerkabahController(object):
                 return HttpResponse(rendered_chrome)
 
             else:
-                # if is_ajax():
-                # else: ...
-
-                # TODO: if ajax, return json list of responses
-                return response.get_response()
+                return self.action_response_helper(response)
 
         # Action based Responses
         action = request.REQUEST.get('action', None)
@@ -228,19 +234,19 @@ class MerkabahController(object):
         
         # If it is an instance of 
         if response:
-            if isinstance(response, (BaseResponse, list, tuple)):
-                if not isinstance(response, (list, tuple)):
-                    responses = [response]
-                else:
-                    responses = response
+            return self.action_response_helper(response)
 
-                return_response_list = []
-                for r in responses:
-                    return_response_list.append(r.get_response())
-                return HttpResponse(json.dumps({'action_response_list' : return_response_list}))
+    def action_response_helper(self, response):
+        if isinstance(response, (BaseResponse, list, tuple)):
+            if not isinstance(response, (list, tuple)):
+                responses = [response]
+            else:
+                responses = response
 
-            return response.get_response()
-        return response
+            return_response_list = []
+            for r in responses:
+                return_response_list.append(r.get_response())
+            return HttpResponse(json.dumps({'action_response_list' : return_response_list}))
 
     def render_html(self, request, context, *args, **kwargs):
         """
@@ -334,5 +340,6 @@ class MerkabahDjangoController(MerkabahController):
         """
         Return a tuple of django url args
         """
-
-        return [cls.as_django_view(), {'name' : cls.view_name}]
+        django_kwargs = {'name' : cls.view_name}
+        
+        return (cls.as_django_view(), django_kwargs)
