@@ -25,7 +25,7 @@ merkabahModule.config(function($routeProvider) {
         /*
         $routeProvider.
         when('/', {templateUrl: '/'}).
-        when('/about/', {templateUrl: '/about/'}).
+         when('/about/', {templateUrl: '/about/'}).
         when('/contact/', {templateUrl: '/contact/'}).
         when('/links/', {templateUrl: '/links/'}). //.
         when('/gallery/', {templateUrl: '/gallery/'}). //.
