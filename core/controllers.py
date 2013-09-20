@@ -113,6 +113,16 @@ class FormDialogResponse(BaseResponse):
         self.response_dict['content'] = self.content
         self.response_dict['title'] = self.title
         
+class GridRowResponse(BaseResponse):
+    response_type = 'add_grid_row'
+
+    def __init__(self, content, id):
+        self.content = content
+        self.node_id = id
+
+    def populate_response(self):
+        self.response_dict['content'] = self.content
+        self.response_dict['node_id'] = self.node_id
 
 class ContentResponse(BaseResponse):
     response_type = 'dynamic_content'

@@ -137,21 +137,28 @@ $.fn.form_handler = function(data){
 	$('#' + form_id).ajaxForm(ajax_settings);
 }
 
+$.fn.add_grid_row_handler = function(data) {
+    //var node_id = data.grid_id;
+    var row = $(data.content);
+    $('#grid').prepend(row);
+    row.hide();
+    row.toggle('highlight');
+}
 $.fn.dynamic_content_handler = function(data) {
 	var node_id = data.node_id
 
 	if (!node_id) {
 		alert('Node id ' + node_id + ' given, but doesn\'t exist in dom.')
 	}
+    
 
 	var target_node = $('#' + node_id);
 	if (!target_node.size()) {
 		console.log('Received a dynamic content response type with target id of "' + node_id + '" but failed to find the node in the existing dom.');
 	}
-	
-	target_node.html(data.content);
-	merkabah.apply_bindings(target_node);
 
+	target_node.html($(data.content));
+	merkabah.apply_bindings(target_node);
 }
 
 merkabah.get_ajax_form_settings = function(data, type) {

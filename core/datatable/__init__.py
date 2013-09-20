@@ -69,7 +69,7 @@ class Datatable(object):
         
     def render_row(self, obj):
         row = self.build_row(obj)
-        return render_template(self.request, 'merkabah/admin/datatable/row.html', {'row': row})
+        return render_to_string('merkabah/admin/datatable/row.html', {'row': row})
     
     def get_row_cells(self, obj):
         return [column.render_cell(obj) for column in self.columns]
