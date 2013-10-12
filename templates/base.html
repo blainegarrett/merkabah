@@ -8,11 +8,13 @@
 		
 		<link href="/merkabah/static/bootstrap/css/bootstrap.css" rel="stylesheet" />
 		<link href="/merkabah/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet" />		
-		
-        {% block head_content %}
-			<script src="/merkabah/static/js/jquery.min.js"></script>
-			<script src="/merkabah/static/bootstrap/js/bootstrap.js"></script>            
-        {% endblock %}
+		<script src="/merkabah/static/js/jquery.min.js"></script>
+		<script src="/merkabah/static/bootstrap/js/bootstrap.js"></script>            
+		<script src="/merkabah/static/js/merkabah.js"></script>
+		<script src="/merkabah/static/js/jquery.form.js"></script>
+
+        {% block head_content %}{% endblock %}
+
     </head>
     <body ng-controller="MainCtrl">
         {% block body_content %}
