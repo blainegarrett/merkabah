@@ -12,7 +12,8 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 
-#from merkabah.core.auth.decorators import login_required
+from merkabah.core.auth.decorators import nologin_required
+
 
 class BaseResponse(object):
     """
@@ -24,7 +25,7 @@ class BaseResponse(object):
 
         """
         self.response_dict = {}
-    
+
     def get_response(self):
         """
         """
@@ -32,7 +33,7 @@ class BaseResponse(object):
         self.response_dict = {'response_type': self.response_type}
         self.populate_response()
         return json.dumps(self.response_dict)
-        
+
 
 class AlertResponse(BaseResponse):
     """
@@ -40,29 +41,33 @@ class AlertResponse(BaseResponse):
     """
 
     response_type = 'alert'
+
     def __init__(self, *args, **kwargs):
         self.message = args[0]
-    
+
     def populate_response(self):
         self.response_dict['message'] = self.message
 
 
 class ErrorResponse(BaseResponse):
     response_type = 'error'
+
     def __init__(self, *args, **kwargs):
         self.content = args[0]
 
     def populate_response(self):
         self.response_dict['content'] = self.content
 
+
 class RedirectResponse(BaseResponse):
     response_type = 'redirect'
 
     def __init__(self, *args, **kwargs):
         self.url = args[0]
-    
+
     def populate_response(self):
         self.response_dict['url'] = self.url
+
 
 class CloseFormResponse(BaseResponse):
     response_type = 'close_form_dialog'
@@ -72,7 +77,8 @@ class CloseFormResponse(BaseResponse):
 
     def populate_response(self):
         self.response_dict['form_id'] = self.id
-    
+
+
 class DialogResponse(BaseResponse):
     response_type = 'dialog'
 
@@ -84,9 +90,10 @@ class DialogResponse(BaseResponse):
         self.response_dict['content'] = self.content
         self.response_dict['title'] = self.title
 
+
 class FormResponse(BaseResponse):
     response_type = 'form'
-    
+
     def __init__(self, form, id, title, target_url, target_action):
         self.form = form
         self.id = id
@@ -112,7 +119,7 @@ class FormDialogResponse(BaseResponse):
     def populate_response(self):
         self.response_dict['content'] = self.content
         self.response_dict['title'] = self.title
-        
+
 
 class ContentResponse(BaseResponse):
     response_type = 'dynamic_content'
@@ -128,6 +135,7 @@ class ContentResponse(BaseResponse):
 
 class TemplateResponse(BaseResponse):
     response_type = 'template'
+
     def __init__(self, template, context):
         self.template = template
         self.context = context
@@ -136,19 +144,20 @@ class TemplateResponse(BaseResponse):
         return self.__str__()
 
     def __str__(self):
-        from django.template.loader import render_to_string
         result = render_to_string(self.template, self.context)
         return result
 
     def populate_response(self):
         self.response_dict['content'] = self.unicode()
 
+
 class FormErrorResponse(BaseResponse):
     response_type = 'form_error'
+
     def __init__(self, form, id):
         self.form = form
         self.id = id
-    
+
     def populate_response(self):
         import json
 
@@ -168,6 +177,7 @@ class MerkabahController(object):
 
     chrome_template = 'base.html'
     require_login = False
+    auth_decorator = nologin_required
     content_title = ''
     method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace']
 
@@ -185,14 +195,30 @@ class MerkabahController(object):
 
     def dispatch(self, request, *args, **kwargs):
         """
+        Dispatch method called via your implementation (django) etc of the "view"
+        Note: context will be a kwarg
+        """
+
+        @self.auth_decorator
+        def authenticated_dispatch(request, *args, **kwargs):
+            return self._dispatch(request, *args, **kwargs)
+
+        if self.auth_decorator and callable(self.auth_decorator):
+            return authenticated_dispatch(request, *args, **kwargs)
+        else:
+            return self._dispatch(request, *args, **kwargs)
+
+    def _dispatch(self, request, *args, **kwargs):
+        """
         Dynamic handler... routes all allowed request types through here
-        
+
         This returns a valid HttpRespponse
         """
 
         context = kwargs.pop('context', {})
 
         # Check process response
+
         response = self.process_request(request, context, *args, **kwargs)
 
         # If it is a template response and it is not ajax, render it as a content body
@@ -204,8 +230,9 @@ class MerkabahController(object):
                 rendered_content = unicode(response)
 
                 chrome_context = context
-                chrome_context.update({'content_title': self.content_title, 'body_content': rendered_content,
-                    'controller': self})
+                chrome_context.update({'content_title': self.content_title,
+                                        'body_content': rendered_content,
+                                        'controller': self})
                 rendered_chrome = render_to_string(self.chrome_template, chrome_context)
                 return HttpResponse(rendered_chrome)
 
@@ -216,7 +243,7 @@ class MerkabahController(object):
         action = request.REQUEST.get('action', None)
         if not action:
             action = context.get('action', None)
-        
+
         # There is an action to evaluate
         if action:
             attr = getattr(self, 'process_%s' % action, None)
@@ -231,8 +258,8 @@ class MerkabahController(object):
 
         if not response:
             response = self.processing_ajax(request, context, *args, **kwargs)
-        
-        # If it is an instance of 
+
+        # If it is an instance of
         if response:
             return self.action_response_helper(response)
 
@@ -246,7 +273,7 @@ class MerkabahController(object):
             return_response_list = []
             for r in responses:
                 return_response_list.append(r.get_response())
-            return HttpResponse(json.dumps({'action_response_list' : return_response_list}))
+            return HttpResponse(json.dumps({'action_response_list': return_response_list}))
 
     def render_html(self, request, context, *args, **kwargs):
         """
@@ -254,7 +281,8 @@ class MerkabahController(object):
         """
         rendered_content = render_to_string(self.template, context)
         chrome_context = context
-        chrome_context.update({'content_title': self.content_title, 'body_content': rendered_content,
+        chrome_context.update({'content_title': self.content_title,
+            'body_content': rendered_content,
             'controller': self})
         rendered_chrome = render_to_string(self.chrome_template, chrome_context)
         return HttpResponse(rendered_chrome)
@@ -273,7 +301,7 @@ class MerkabahController(object):
             request_type = request.GET.get('request_type', None)
             action = request.GET.get('action', None)
         else:
-            request_type = request.POST.get('request_type', None)
+            #request_type = request.POST.get('request_type', None)
             action = request.POST.get('action', None)
 
         #logging.error('----------------%s' % action)
@@ -304,7 +332,8 @@ class MerkabahController(object):
 
     def get_ajax(self, request, context, *args, **kwargs):
         rendered_content = render_to_string(self.template, context)
-        json_return = json.dumps({'content': rendered_content, 'controller_name': self.controller_name})
+        json_return = json.dumps({'content': rendered_content,
+                                    'controller_name': self.controller_name})
         return  HttpResponse(json_return)
 
     #######################################################
@@ -340,6 +369,5 @@ class MerkabahDjangoController(MerkabahController):
         """
         Return a tuple of django url args
         """
-        django_kwargs = {'name' : cls.view_name}
-        
+        django_kwargs = {'name': cls.view_name}
         return (cls.as_django_view(), django_kwargs)

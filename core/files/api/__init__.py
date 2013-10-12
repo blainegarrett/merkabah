@@ -36,6 +36,8 @@ class Filesystem(object):
             for key in fields.keys():
                 field = fields[key]
                 if isinstance(field, cgi.FieldStorage) and 'blob-key' in field.type_options:
+                    logging.warning(field.type_options)
+
                     if field.type_options['blob-key'].find('encoded_gs_file:') == 0:
                         # This is a Cloud Store Upload
                         file_info = parse_file_info(field)

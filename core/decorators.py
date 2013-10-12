@@ -249,3 +249,14 @@ except ImportError: # Python >= 2.5
         dict(__call__=__call__, __init__=__init__))
     
 contextmanager = decorator(ContextManager)
+
+
+
+def decorator_apply(dec, func):
+    """
+    Decorate a function by preserving the signature even if dec
+    is not a signature-preserving decorator.
+    """
+    return FunctionMaker.create(
+        func, 'return decorated(%(signature)s)',
+        dict(decorated=dec(func)), __wrapped__=func)

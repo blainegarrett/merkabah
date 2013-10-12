@@ -38,7 +38,6 @@ class Cloudstorage(Filesystem):
         """
 
         upload_path = '%s%s' % (self.bucket, self.DEFAULT_UPLOAD_FOLDER)
-
         url = blobstore.create_upload_url(success_path, gs_bucket_name=upload_path)
         
         # Append trailing slash so django won't blow up?
