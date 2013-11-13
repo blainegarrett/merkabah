@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from merkabah.core.files.api import Filesystem
 from merkabah.lib import cloudstorage as gcs
 from google.appengine.ext import blobstore
-
+import logging
 
 my_default_retry_params = gcs.RetryParams(initial_delay=0.2,
                                           max_delay=5.0,
@@ -38,6 +38,8 @@ class Cloudstorage(Filesystem):
         """
 
         upload_path = '%s%s' % (self.bucket, self.DEFAULT_UPLOAD_FOLDER)
+        logging.error('upload path: %s' % upload_path)
+        logging.error('success path: %s' % success_path)
         url = blobstore.create_upload_url(success_path, gs_bucket_name=upload_path)
         
         # Append trailing slash so django won't blow up?
@@ -52,6 +54,17 @@ class Cloudstorage(Filesystem):
         """
     '''
 
+    def delete(self, filename):
+        filename = "/%s/%s" % (self.bucket, filename)
+        write_retry_params = gcs.RetryParams(backoff_factor=1.1)
+        
+        try:
+            gcs.delete(filename)
+        except gcs.NotFoundError:
+            return False
+            pass
+        return True
+        
     def read(self, filename):
         """
         """
