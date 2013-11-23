@@ -10,7 +10,7 @@ import json
 
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 
 from merkabah.core.auth.decorators import nologin_required
 
@@ -237,6 +237,9 @@ class MerkabahController(object):
         #   it is likely a angular template url or a redrect, etc.
 
         if response:
+            if isinstance(response, (HttpResponsePermanentRedirect, HttpResponseRedirect)):
+                return response
+
             if isinstance(response, TemplateResponse):
                 # TODO: REFACTOR THIS
                 rendered_content = unicode(response)
