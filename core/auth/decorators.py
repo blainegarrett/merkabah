@@ -4,21 +4,65 @@ from merkabah.core.auth import AuthenticationRequired
 from google.appengine.api import users as gusers
 from django.http import HttpResponseRedirect
 
-@decorators.decorator
-def login_required(f, *args, **kwargs):
-    """
-    Simple Decorator to require login
-    """
-    # TODO: urlescape the return path, etc
-    return_url = args[1].META['PATH_INFO'] + '?'+ args[1].META['QUERY_STRING']
+import logging
 
-    guser = gusers.get_current_user()
+class LoginRequired(object):
+    """
+    tail_recursive decorator based on Kay Schluehr's recipe
+    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/496691
+    with improvements by me and George Sakkis.
+    """
 
-    if not guser:
-        return HttpResponseRedirect(gusers.create_login_url(return_url))
-        #raise AuthenticationRequired('Could not retrieve a Google User. Please Login. ')
-    
-    return f(*args, **kwargs)
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwd):
+
+        
+        # TODO: urlescape the return path, etc
+        return_url = args[0].META['PATH_INFO'] + '?'+ args[0].META['QUERY_STRING']
+
+        guser = gusers.get_current_user()
+        
+        if not guser:
+            logging.warning('Unauthenicated user attempted to accesss this url.')
+            return HttpResponseRedirect(gusers.create_login_url(return_url))
+
+        # They are authenticated...
+
+        email = guser.email()
+        if not email == 'blaine@blainegarrett.com':
+            logging.debug('Loading request for authenticated user %s.' % guser.email())
+            return HttpResponseRedirect('/?login=unauthenticated')
+
+        return self.func(*args, **kwd)
+        
+
+class NoLogin(object):
+    """
+    tail_recursive decorator based on Kay Schluehr's recipe
+    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/496691
+    with improvements by me and George Sakkis.
+    """
+
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwd):
+        return self.func(*args, **kwd)
+
+def nologin_required(ctrl, f, *args, **kwargs):
+    """
+    Simple Decorator to not login
+    """
+    return decorators.decorator_apply(NoLogin, f)
+
+
+def login_required(ctrl, f, *args, **kwargs):
+    """
+    Simple Decorator to login
+    """
+    return decorators.decorator_apply(LoginRequired, f)
 
     
 '''

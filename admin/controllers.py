@@ -6,6 +6,7 @@ A collection of controllers used for administration of the the Merkabah install
 #from django.shortcuts import redirect
 #from django.template import RequestContext
 from merkabah.core.controllers import MerkabahDjangoController
+from merkabah.core.auth.decorators import login_required
 
 from merkabah.core import controllers as merkabah_controllers
 
@@ -28,6 +29,7 @@ class MerkabahAdminBaseController(MerkabahDjangoController):
 
     chrome_template = 'merkabah/admin/chrome.html'
     require_login = True
+    auth_decorator = login_required
 
     def process_request(self, request, context, *args, **kwargs):
         """

@@ -36,15 +36,20 @@ class Filesystem(object):
             for key in fields.keys():
                 field = fields[key]
                 if isinstance(field, cgi.FieldStorage) and 'blob-key' in field.type_options:
-                    if field.type_options['blob-key'].find('encoded_gs_file:') == 0:
+                    logging.warning(field)
+                    logging.warning(field.type_options)
+                    logging.warning(field.type_options['blob-key'])
+                    logging.warning(type(field.type_options['blob-key']))
+                    #if field.type_options['blob-key'].find('encoded_gs_file:') == 0:
+                    if True:
                         # This is a Cloud Store Upload
                         file_info = parse_file_info(field)
                         logging.warning(file_info)
                         request.__uploads.setdefault(key, []).append(file_info)
-                    else:
-                        # This is the normal blobstore upload
-                        blob_info = parse_blob_info(field)
-                        request.__uploads.setdefault(key, []).append(blob_info)
+                    #else:
+                    #    # This is the normal blobstore upload
+                    #    blob_info = parse_blob_info(field)
+                    #    request.__uploads.setdefault(key, []).append(blob_info)
 
                 if populate_post:
                     request.POST[key] = field.value

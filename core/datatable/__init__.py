@@ -1,5 +1,7 @@
 from django.template.loader import render_to_string
 
+class DatatableGroupActions(object):
+    pass
 
 class DatatableColumn(object):
     columns = []
@@ -47,7 +49,10 @@ class Datatable(object):
                 self.unsorted_columns.append(column)
             elif attr == 'column_order':
                 self.column_order = column
-            
+
+            elif attr == 'group_actions':
+                self.group_actions = column
+
         for column_id in self.column_order:
             for column in self.unsorted_columns:
                 if column.id == column_id:
@@ -75,6 +80,9 @@ class Datatable(object):
         return [column.render_cell(obj) for column in self.columns]
         
     def render(self):
+        if hasattr(self, 'group_actions'):
+            self.context['group_actions'] = self.group_actions.render_content()
+
         self.context['entities'] = self.entities
         
         self.context['rows'] = self.rows        
