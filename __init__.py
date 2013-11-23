@@ -1,5 +1,6 @@
 """
 Main Merkabah Package
 
-License:
+License: TODO: Figure out appropriate license
+
 """
