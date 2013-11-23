@@ -150,7 +150,6 @@ $.fn.dynamic_content_handler = function(data) {
 	if (!node_id) {
 		alert('Node id ' + node_id + ' given, but doesn\'t exist in dom.')
 	}
-    
 
 	var target_node = $('#' + node_id);
 	if (!target_node.size()) {
