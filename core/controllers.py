@@ -94,12 +94,13 @@ class DialogResponse(BaseResponse):
 class FormResponse(BaseResponse):
     response_type = 'form'
 
-    def __init__(self, form, id, title, target_url, target_action):
+    def __init__(self, form, id, title, target_url, target_action, is_upload=False):
         self.form = form
         self.id = id
         self.title = title
         self.target_url = target_url
         self.target_action = target_action
+        self.is_upload = is_upload
 
     def populate_response(self):
         self.response_dict['form'] = self.form.as_bootstrap()
@@ -107,6 +108,7 @@ class FormResponse(BaseResponse):
         self.response_dict['title'] = self.title
         self.response_dict['target_url'] = self.target_url
         self.response_dict['target_action'] = self.target_action
+        self.response_dict['is_upload'] = self.is_upload
 
 
 class FormDialogResponse(BaseResponse):

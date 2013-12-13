@@ -2,10 +2,17 @@ var merkabah = {};
 merkabah.utils = {};
 
 
-merkabah.render_form_dialog = function(url, form_id, form_content, dialog_title) {
+merkabah.render_form_dialog = function(url, form_id, form_content, dialog_title, is_upload) {
+	var dialog, form_str, form;
+	dialog = $('<div id="modal_for_form_' + form_id + '" class="modal hide fade modal_wide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">');
 	
-	var dialog = $('<div id="modal_for_form_' + form_id + '" class="modal hide fade modal_wide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">');
-	var form = $('<form class="fill-up" id="' + form_id + '" method="POST" action="' + url + '">');
+	form_str = '<form class="fill-up" id="' + form_id + '" method="POST" action="' + url + '"';
+	if (is_upload) {
+	    form_str += ' enctype="multipart/form-data"';
+	}
+	form_str += '>'
+
+	form = $(form_str);
 	dialog.append(form);
 
 	var header = $('<div class="modal-header">');
@@ -113,7 +120,7 @@ $.fn.close_form_dialog_handler = function(data) {
 
 $.fn.form_handler = function(data){
 	/* Handler for form responses */
-	var form_id, dialog_title, rendered_form;
+	var form_id, dialog_title, rendered_form, is_upload;
 
 	form_id = data.form_id
 
@@ -125,6 +132,7 @@ $.fn.form_handler = function(data){
 	rendered_form = data.form
 	url = data.target_url
 	action = data.target_action
+	is_upload = data.is_upload
 
 	//$.fn['dialog_handler'].apply(this, [data]);
 
@@ -133,7 +141,7 @@ $.fn.form_handler = function(data){
 
 	var submit_data = {'form_id': form_id, 'action' : action};
 	var ajax_settings = merkabah.get_ajax_form_settings(submit_data, 'get');
-	
+
 	$('#' + form_id).ajaxForm(ajax_settings);
 }
 
