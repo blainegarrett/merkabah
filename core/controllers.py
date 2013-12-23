@@ -231,6 +231,8 @@ class MerkabahController(object):
 
         context = kwargs.pop('context', {})
 
+        context['user'] = request._cached_user
+
         # Check process response
 
         response = self.process_request(request, context, *args, **kwargs)
