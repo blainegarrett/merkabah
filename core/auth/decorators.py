@@ -5,8 +5,10 @@ from google.appengine.api import users as gusers
 from django.http import HttpResponseRedirect
 
 import logging
-
+import urllib
 from merkabah.core.auth import SESSION_KEY
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 class LoginRequired(object):
     """
@@ -26,9 +28,12 @@ class LoginRequired(object):
             return self.func(*args, **kwd)
         
         return_url = request.META['PATH_INFO'] + '?'+ request.META['QUERY_STRING']
+        query = 'return_url=%s' % urllib.quote_plus(return_url)
 
-        if not hasattr(request, 'user'):
-            return HttpResponseRedirect('/?=login=false&return_url=%s' % return_url)
+        base_url = reverse('cmd_auth_login')
+        
+        redirect_url = '%s?%s' % (base_url, query)
+        return HttpResponseRedirect(redirect_url)
 
 
 
