@@ -6,6 +6,8 @@ from django.http import HttpResponseRedirect
 
 import logging
 
+from merkabah.core.auth import SESSION_KEY
+
 class LoginRequired(object):
     """
     tail_recursive decorator based on Kay Schluehr's recipe
@@ -18,25 +20,17 @@ class LoginRequired(object):
 
     def __call__(self, *args, **kwd):
 
+        request = args[0] # Really
+        user = request._cached_user # Set in middleware
+        if user and user.is_authenticated():
+            return self.func(*args, **kwd)
         
-        # TODO: urlescape the return path, etc
-        return_url = args[0].META['PATH_INFO'] + '?'+ args[0].META['QUERY_STRING']
+        return_url = request.META['PATH_INFO'] + '?'+ request.META['QUERY_STRING']
 
-        guser = gusers.get_current_user()
-        
-        if not guser:
-            logging.warning('Unauthenicated user attempted to accesss this url.')
-            return HttpResponseRedirect(gusers.create_login_url(return_url))
+        if not hasattr(request, 'user'):
+            return HttpResponseRedirect('/?=login=false&return_url=%s' % return_url)
 
-        # They are authenticated...
 
-        email = guser.email()
-        if not email == 'blaine@blainegarrett.com':
-            logging.debug('Loading request for authenticated user %s.' % guser.email())
-            return HttpResponseRedirect('/?login=unauthenticated')
-
-        return self.func(*args, **kwd)
-        
 
 class NoLogin(object):
     """

@@ -28,15 +28,21 @@ def login(request, user, login_obj):
     request.user = user
 
 def logout(request):
-    request.session.delete()
+    request.session.terminate()
+    if hasattr(request, 'user'):
+        del request.user
+    if hasattr(request, '_cached_user'):
+        del request._cached_user
 
 def get_user(request):
     from merkabah.core.auth.models import User, AnonymousUser
     user = AnonymousUser()
 
-    user_key_name = request.session[SESSION_KEY]
-    if user_key_name:
-        user = ndb.Key('User', user_key_name).get()
+    if request.session.get(SESSION_KEY, None):
+        user_key_name = request.session[SESSION_KEY]
+
+        if user_key_name:
+            user = ndb.Key('User', user_key_name).get()
 
     # Do additional checks here for IPbans, user bans, etc        
     if not user:

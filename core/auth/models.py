@@ -21,6 +21,26 @@ class User(ndb.Model):
     email = ndb.StringProperty()
     first_name = ndb.StringProperty()
     last_name = ndb.StringProperty()
+    
+    def get_display_name(self):
+        if self.first_name and self.last_name:
+            return u'%s %s' % (self.first_name, self.last_name)
+        else:
+            return self.username
+    
+    def get_profile_image(self):
+        # For now we're just using gravatar
+        import hashlib
+        email = self.email
+
+        the_hash = hashlib.md5(email).hexdigest()
+        return 'http://www.gravatar.com/avatar/%s' % the_hash
+        
+    def is_authenticated(self):
+        """
+        """
+
+        return True
 
 
 class AnonymousUser(object):
