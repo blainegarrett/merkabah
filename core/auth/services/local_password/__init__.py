@@ -1,14 +1,41 @@
-from merkabah.core.auth.models import User, Login
-#from merkabah.authentication.helpers import hash_email
-import datetime
+"""
+Merkabah Local Password Auth Service
 
-# Not currently in use, but probably should be the only way to create a user
-# Wrap in transaction
-def register_user(username, email, confirmed=False):
-    raise Exception('Not currently in use!!! See merkabah.authentication.services.local_password.__init__.py')
-    email_hash = hash_email(email)
-    confirmation_key = 'sdfsdfsdfsdfsdfsdfsdf'
-    squelch_value = 0
-    user = User(username=username, email=email, email_hash=email_hash, created=datetime.datetime.now(), confirmed=confirmed, confirmation_key=confirmation_key, squelch = squelch_value) #TODO:DEFAULT
-    user.save()
-    return user
+Passwords are encrypted using PBKDF2 using SHA1 hashing algorithm
+"""
+import os
+from Crypto.Protocol.KDF import PBKDF2
+
+PBKDF2_ITERATIONS = 5000
+KEY_LENGTH = 32
+
+
+def set_password(password, login):
+    """
+    Given a plain text password
+    Note: This does not save the login such that you can do it in a txn, etc
+    """
+
+    salt = os.urandom(32)
+
+    key = PBKDF2(password, salt, dkLen=KEY_LENGTH, count=PBKDF2_ITERATIONS)
+
+    login.auth_token = salt.encode('hex')
+    login.auth_data = key.encode('hex')
+
+    return login
+
+
+def check_password(password, login):
+    """
+    Given a plain text password, hash it and compare it to the original
+    """
+
+    salt_hex = login.auth_token
+    encrypted_pw_hex = login.auth_data
+
+    key = PBKDF2(password, salt_hex.decode('hex'), dkLen=KEY_LENGTH, count=PBKDF2_ITERATIONS)
+
+    if key.encode('hex') == encrypted_pw_hex:
+        return True
+    return False
