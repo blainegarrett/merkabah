@@ -10,6 +10,7 @@ from merkabah.core.auth import SESSION_KEY
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
+
 class LoginRequired(object):
     """
     tail_recursive decorator based on Kay Schluehr's recipe
