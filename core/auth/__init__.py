@@ -101,7 +101,13 @@ def create_account(account_name, account_number, creator=None):
 
 
 # Users
-
+def get_users(cursor=None):
+    """
+    Fetch a paginated list of users
+    """
+    q = auth_models.User.query()
+    return q.fetch()
+    
 
 def create_user(username, email, first_name, last_name, creator=None):
     u = auth_models.User(username=username,

@@ -477,9 +477,6 @@ class DjangoSessionMiddleware(object):
         self.response_handler = None
 
     def process_request(self, request):
-        import logging
-        logging.error('In Process Request')
-
         self.response_handler = self.wrapped_wsgi_middleware(None, lambda status, headers, exc_info : headers)
         request.session = get_current_session()  # for convenience
 
@@ -491,7 +488,6 @@ class DjangoSessionMiddleware(object):
             self.response_handler = None
         if request.session.is_accessed():
             from django.utils.cache import patch_vary_headers
-            logging.info("Varying")
             patch_vary_headers(response, ('Cookie',))
         return response
 
