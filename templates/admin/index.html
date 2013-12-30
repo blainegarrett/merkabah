@@ -1,50 +1,10 @@
-<div class="box">
-	<div class="tab-header">Not much to see here...</div>
-	
-	<div class="padded">
-		Welcome to the merkabah admin...
+<div class="row">
+	<div class="col-lg-9">
 		
-		<style>
-		.btn-text {
-			padding-left : 3px;
-		}
-		</style>
-		
-		<div class="btn-group">
-		  <a class="btn btn-primary action" href="/madmin/?action=yodal&amp;squirel=1"><span class="btn-icon icon-user"></span><span class="btn-text">Redirect</span></a>
-		  <a class="btn btn-primary action" href="/madmin/?action=fart&amp;squirel=1"><span class="btn-icon icon-user"></span><span class="btn-text">Chained Responses</span></a>
-		  <a class="btn btn-primary action" href="/madmin/?action=dialog_yo&amp;squirel=1"><span class="btn-icon icon-user"></span><span class="btn-text">Dialog</span></a>
-		  <a class="btn btn-primary action" href="/madmin/?action=error_display&amp;squirel=1"><span class="btn-icon icon-user"></span><span class="btn-text">Error</span></a>
-		  <a class="btn btn-primary action" href="/madmin/?action=throw_exception&amp;squirel=1"><span class="btn-icon icon-user"></span><span class="btn-text">Exception</span></a>
-		  <a class="btn btn-primary action" href="/madmin/?action=load_content&amp;node_id=dyn_container"><span class="btn-icon icon-user"></span><span class="btn-text">Dynamic Content</span></a>
-
-
-
-
-
-		  <a class="btn btn-success"><span class=" icon-circle-arrow-up"></span><span>2</span></a>
-		  <a class="btn"><span class="icon-user icon-white"></span><span>3</span></a>
-		</div>
-		
-        <a id="{{button.id}}" href="{{ button.data }}" class="action-button ui-widget ui-button ui-state-default{% if button.disabled %} ui-state-disabled{% endif %}{% if button.first %} ui-corner-left alpha{% endif %}{% if button.last %} ui-corner-right omega{% endif %}{% if button.text and button.icon %} ui-button-text-icon-primary{% endif %}{% if button.text and not button.icon %} ui-button-text-only{% endif %}{% if not button.text and button.icon %} ui-button-icon-only{% endif %}{% if button.primary %} ui-priority-primary{% endif %} {{ button.css|join:' ' }}"{% if button.attrs %} {{ button.attrs|join:' ' }}{% endif %}{% if button.title %} title="{{ button.title }}"{% endif %}>		
-			
-		</a>
-
-		{% comment %}
-        <a id="{{button.id}}" href="{{ button.data }}" class="action-button ui-widget ui-button ui-state-default{% if button.disabled %} ui-state-disabled{% endif %}{% if button.first %} ui-corner-left alpha{% endif %}{% if button.last %} ui-corner-right omega{% endif %}{% if button.text and button.icon %} ui-button-text-icon-primary{% endif %}{% if button.text and not button.icon %} ui-button-text-only{% endif %}{% if not button.text and button.icon %} ui-button-icon-only{% endif %}{% if button.primary %} ui-priority-primary{% endif %} {{ button.css|join:' ' }}"{% if button.attrs %} {{ button.attrs|join:' ' }}{% endif %}{% if button.title %} title="{{ button.title }}"{% endif %}>
-          {% if button.icon %}<span class="ui-button-icon-primary ui-icon {{ button.icon }}"></span>{% endif %}
-          {% if button.text %}<span class="ui-button-text">{{ button.text }}</span>{% endif %}
-        </a>
-		{% endcomment %}
-
-		<div style="background-color:#fff; padding:20px;">
-			<h3>Dynamic Content Example</h3>
-			<p>Click the dynamic content button above.</p>
-			<div id="dyn_container" style="border:1px dotted silver;padding:5px;">
-				Default Content
+		<div class="box">
+			<div class="box-header">
+				<span class="title">Login</span>
 			</div>
-		</div>
 
-		
+		</div>
 	</div>
-</div>

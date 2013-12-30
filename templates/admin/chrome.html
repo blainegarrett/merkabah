@@ -1,256 +1,411 @@
 {% load tt_merkabah %}
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-  	<title>Control Center</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0">
 
 	<!-- Always force latest IE rendering engine or request Chrome Frame -->
-  	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
-	<meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0" />
+	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
 
-	<script src="/merkabah/static/js/jquery.min.js"></script>
-	<script src="/merkabah/static/js/jquery.form.js"></script>
-	
-	<script src="/merkabah/static/plugins/ckeditor/ckeditor.js"></script>
-	<script src="/merkabah/static/plugins/ckeditor/adapters/jquery.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800">
 
-	<script src="/merkabah/static/admin/themes/plastique/javascripts/application.js" type="text/javascript"></script>
-	<script src="/merkabah/static/admin/themes/plastique/javascripts/docs.js" type="text/javascript"></script>
-	<script src="/merkabah/static/admin/themes/plastique/javascripts/docs_charts.js" type="text/javascript"></script>
-	<script src="/merkabah/static/admin/themes/plastique/javascripts/documentation.js" type="text/javascript"></script>
-	<script src="/merkabah/static/admin/themes/plastique/javascripts/prettify.js" type="text/javascript"></script>
+	<!-- Use title if it's in the page YAML frontmatter -->
+	<title>Core Admin Theme</title>
 
-	<script src="/merkabah/static/js/merkabah.js"></script>
+	<link href="/merkabah/static/admin/themes/coreadmin/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />
 
-	<link href="/merkabah/static/admin/themes/plastique/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />
-	<link href="/merkabah/static/admin/themes/plastique/stylesheets/prettify.css" media="screen" rel="stylesheet" type="text/css" />
-
-<style>
-	body .modal_wide {
-		width: 80%;
-		margin-left: -40%;
-	}
-</style>
-
-<script type="text/javascript">
-	//prettyPrint()
-</script>
-
-
-
+	<script src="/merkabah/static/admin/themes/coreadmin/javascripts/application.js" type="text/javascript"></script>
+	<style>
+		body .modal_wide {
+			width: 80%;
+			margin-left: -40%;
+		}
+	</style>
 </head>
+
+
+
 <body>
+	<nav class="navbar navbar-default navbar-inverse navbar-static-top" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<a class="navbar-brand" href="/command/">Dim Command Center</a>
+
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-primary">
+				<span class="sr-only">Toggle Side Navigation</span>
+				<i class="icon-th-list"></i>
+			</button>
+
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-top">
+				<span class="sr-only">Toggle Top Navigation</span>
+				<i class="icon-align-justify"></i>
+			</button>
+
+		</div>
+
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse navbar-collapse-top">
+			<div class="navbar-right">
+
+				{% if user.is_authenticated %}
+
+					<ul class="nav navbar-nav navbar-left">
+						<li class="cdrop active"><a href="#">Link</a></li>
+
+						<li class="cdrop"><a href="#">Link</a></li>
+
+						<li class="dropdown cdrop">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Quicklinks <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="#">Action</a></li>
+								<li><a href="#">Another action</a></li>
+								<li class="divider"></li>
+								<li><a href="#">Separated link</a></li>
+							</ul>
+						</li>
+					</ul>
+
+					<form class="navbar-form navbar-left" role="search">
+						<div class="form-group">
+							<input type="text" class="search-query animated" placeholder="Search">
+							<i class="icon-search"></i>
+						</div>
+					</form>
+
+
+					<ul class="nav navbar-nav navbar-left">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle dropdown-avatar" data-toggle="dropdown">
+								<span>
+									<img class="menu-avatar" src="{{ user.get_profile_image }}" /> <span>{{ user.get_display_name }}<i class="icon-caret-down"></i></span>
+									<span class="badge badge-dark-red">5</span>
+								</span>
+							</a>
+							<ul class="dropdown-menu">
+
+								<!-- the first element is the one with the big avatar, add a with-image class to it -->
+
+								<li class="with-image">
+									<div class="avatar">
+										<img src="{{ user.get_profile_image }}" />
+									</div>
+									<span>{{ user.get_display_name }}</span>
+								</li>
+
+								<li class="divider"></li>
+
+								<li><a href="#"><i class="icon-user"></i> <span>Profile</span></a></li>
+								<li><a href="#"><i class="icon-cog"></i> <span>Settings</span></a></li>
+								<li><a href="#"><i class="icon-envelope"></i> <span>Messages</span> <span class="label label-dark-red pull-right">5</span></a></li>
+								<li><a href="{% url cmd_auth_logout %}"><i class="icon-off"></i> <span>Logout</span></a></li>
+							</ul>
+						</li>
+					</ul>
+				{% endif%}
+			</div>
 
 
 
-<div id="modal" class="black-box modal hide fade">
-  <div class="modal-header tab-header">
-    <button type="button" class="close" data-dismiss="modal">&times;</button>
-    <span>Some modal title</span>
-  </div>
-  <div class="modal-body separator">
-    <h4>Text in a modal</h4>
-    <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem.</p>
-  </div>
-  <div class="modal-footer">
-    <div class="inner-well">
-      <a class="button mini rounded light-gray" data-dismiss="modal">Close</a>
-      <a class="button mini rounded blue">Save changes</a>
-    </div>
-  </div>
-</div>
 
-<div id="modal-gallery" class="black-box modal modal-gallery hide fade">
-  <div class="modal-header tab-header">
-    <button type="button" class="close" data-dismiss="modal">&times;</button>
-    <span class="modal-title"></span>
-  </div>
-  <div class="modal-body"><div class="modal-image"></div></div>
-  <div class="modal-footer">
-    <div class="pull-left">
-      You can also change the images<br/> by scrolling the mouse wheel!
-    </div>
-    <div class="pull-right">
-      <a class="button blue modal-next">Next <i class="icon-arrow-right icon-white"></i></a>
-      <a class="button gray modal-prev"><i class="icon-arrow-left icon-white"></i> Previous</a>
-      <a class="button green modal-play modal-slideshow" data-slideshow="5000"><i class="icon-play icon-white"></i> Slideshow</a>
-      <a class="button black" target="_blank"><i class="icon-download"></i> Download</a>
-    </div>
-  </div>
-</div>
+		</div><!-- /.navbar-collapse -->
 
 
-	<nav id="primary" class="main-nav">{% include 'merkabah/admin/ui/primary_menu.html' %}</nav>
+	</nav>
+	<div class="sidebar-background">
+		<div class="primary-sidebar-background"></div>
+	</div>
 
 
-<nav id="secondary" class="main-nav">
-
-  <div class="profile-menu">
-
-    <div class="pull-left">
-      <div class="avatar">
-        <img src="/merkabah/static/admin/themes/plastique/images/avatar.png" />
-      </div>
-    </div>
-
-    <div class="pull-left">
-      <div class="title">
-        Hi, <span title="{{ user.nickname }}">{{ user.nickname|truncate:10 }}</span>
-      </div>
-      <div class="btn-group">
-        <button class="button mini inset black"><i class="icon-search"></i></button>
-        <button class="button mini inset black">Projects</button>
-        <button class="button mini inset black dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i></button>
-        <ul class="dropdown-menu black-box-dropdown">
-          <li><a href="#">Action</a></li>
-          <li><a href="#">Another action</a></li>
-          <li><a href="#">Something else here</a></li>
-          <li class="divider"></li>
-          <li><a href="#">Separated link</a></li>
-        </ul>
-
-      </div>
-    </div>
-
-    <div class="pull-right profile-menu-nav-collapse">
-      <button class="button black"><i class="icon-reorder"></i></button>
-    </div>
-
-  </div>
+	{% comment %}{% include 'merkabah/admin/ui/primary_menu.html' %}{% endcomment %}
 
 
-<ul class="secondary-nav-menu">
-	<li class="">
-	  <a href="/madmin/blog/post/">
-	      <i class="icon-file"></i> Posts
-	  </a>
-	</li>
-	<li class="">
-  		<a href="/madmin/blog/category/">
-      		<i class="icon-tasks"></i> Categories
-  		</a>
-	</li>
-  </ul>
+	<div class="primary-sidebar">
 
-
-</nav>
+		<!-- Main nav -->
+		<ul class="nav navbar-collapse collapse navbar-collapse-primary">
 
 
 
-<section id="main">
-  <div class="top-nav">
-  <div class="container-fluid">
-    <div class="row-fluid search-button-bar-container">
-      <div class="span12">
-        <ul class="breadcrumb">
-          <li><a href="#"><i class="icon-home"></i> Some</a></li>
-          <li><a href="#">Nice</a></li>
-          <li><a href="#">Breadcrumbs</a></li>
-          <li class="active"><a href="#">Here</a></li>
-        </ul>
-        <a class="search-button-trigger" href="#"><i class="icon-search"></i></a>
-      </div>
-    </div>
+			<li class="">
+				<span class="glow"></span>
+				<a href="../dashboard/dashboard.html">
+					<i class="icon-dashboard icon-2x"></i>
+					<span>Dashboard</span>
+				</a>
+			</li>
 
-    <div class="row-fluid search-bar-nav">
-      <div class="span12">
-        <form>
-          <input type="text" class="search" placeholder="Search...">
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
-  <div class="container-fluid">
-    <div class="row-fluid">
-  		<div class="span12">
- 			<!-- main content -->
-			<div style="overflow:auto;" ng-view>
 
+
+
+
+			<li class="dark-nav ">
+
+				<span class="glow"></span>
+
+
+
+				<a class="accordion-toggle collapsed " data-toggle="collapse" href="#BYzqhVZJ5L">
+					<i class="icon-beaker icon-2x"></i>
+					<span>
+						UI Lab
+						<i class="icon-caret-down"></i>
+					</span>
+
+				</a>
+
+				<ul id="BYzqhVZJ5L" class="collapse ">
+
+					<li class="">
+						<a href="../ui_lab/buttons.html">
+							<i class="icon-hand-up"></i> Buttons
+						</a>
+					</li>
+
+					<li class="">
+						<a href="../ui_lab/general.html">
+							<i class="icon-beaker"></i> General elements
+						</a>
+					</li>
+
+					<li class="">
+						<a href="../ui_lab/icons.html">
+							<i class="icon-info-sign"></i> Icons
+						</a>
+					</li>
+
+					<li class="">
+						<a href="../ui_lab/grid.html">
+							<i class="icon-th-large"></i> Grid
+						</a>
+					</li>
+
+					<li class="">
+						<a href="../ui_lab/tables.html">
+							<i class="icon-table"></i> Tables
+						</a>
+					</li>
+
+					<li class="">
+						<a href="../ui_lab/widgets.html">
+							<i class="icon-plus-sign-alt"></i> Widgets
+						</a>
+					</li>
+
+				</ul>
+
+			</li>
+
+
+
+
+
+
+			<li class="">
+				<span class="glow"></span>
+				<a href="../forms/forms.html">
+					<i class="icon-edit icon-2x"></i>
+					<span>Forms</span>
+				</a>
+			</li>
+
+
+
+
+
+
+			<li class="">
+				<span class="glow"></span>
+				<a href="../charts/charts.html">
+					<i class="icon-bar-chart icon-2x"></i>
+					<span>Charts</span>
+				</a>
+			</li>
+
+
+
+
+
+
+			<li class="dark-nav active">
+
+				<span class="glow"></span>
+
+
+
+				<a class="accordion-toggle  " data-toggle="collapse" href="#xmA3F2CZth">
+					<i class="icon-link icon-2x"></i>
+					<span>
+						Others
+						<i class="icon-caret-down"></i>
+					</span>
+
+				</a>
+
+				<ul id="xmA3F2CZth" class="collapse in">
+
+					<li class="">
+						<a href="wizard.html">
+							<i class="icon-magic"></i> Wizard
+						</a>
+					</li>
+
+					<li class="">
+						<a href="login.html">
+							<i class="icon-user"></i> Login Page
+						</a>
+					</li>
+
+					<li class="">
+						<a href="sign_up.html">
+							<i class="icon-user"></i> Sign Up Page
+						</a>
+					</li>
+
+					<li class="active">
+						<a href="full_calendar.html">
+							<i class="icon-calendar"></i> Full Calendar
+						</a>
+					</li>
+
+					<li class="">
+						<a href="error404.html">
+							<i class="icon-ban-circle"></i> Error 404 page
+						</a>
+					</li>
+
+				</ul>
+
+			</li>
+
+
+
+
+		</ul>
+
+		<div class="hidden-sm hidden-xs">
+			<div class="text-center" style="margin-top: 60px">
+				<div class="easy-pie-chart-percent" style="display: inline-block" data-percent="89"><span>89%</span></div>
+				<div style="padding-top: 20px"><b>CPU Usage</b></div>
+			</div>
+
+			<hr class="divider" style="margin-top: 60px">
+
+			<div class="sparkline-box side">
+
+				<div class="sparkline-row">
+					<h4 class="gray"><span>Orders</span> 847</h4>
+					<div class="sparkline big" data-color="gray"><!--29,3,10,28,23,29,20,28,13,28,29,13--></div>
+				</div>
+
+				<hr class="divider">
+				<div class="sparkline-row">
+					<h4 class="dark-green"><span>Income</span> $43.330</h4>
+					<div class="sparkline big" data-color="darkGreen"><!--26,4,26,21,28,16,14,17,13,26,13,12--></div>
+				</div>
+
+				<hr class="divider">
+				<div class="sparkline-row">
+					<h4 class="blue"><span>Reviews</span> 223</h4>
+					<div class="sparkline big" data-color="blue"><!--5,25,22,7,10,16,10,16,27,5,28,21--></div>
+				</div>
+
+				<hr class="divider">
+			</div>
+		</div>
+
+
+	</div>
+
+	<div ng-view id="body_content" class="container-fluid">
+		
+		
+		
+		<div class="main-content">
+
+			<!-- start title bar -->
+			<div class="container">
+				<div class="row">
+
+					<div class="area-top clearfix">
+						<div class="pull-left header">
+							<h3 class="title">
+								<i class="icon-calendar"></i>
+								Totally Awesome
+							</h3>
+							<h5>
+								<span>
+									Super Awesome subtitle
+								</span>
+							</h5>
+						</div>
+
+						{% comment %}
+						<ul class="list-inline pull-right sparkline-box">
+
+							<li class="sparkline-row">
+								<h4 class="blue"><span>Orders</span> 847</h4>
+								<div class="sparkline big" data-color="blue"><!--24,25,7,29,24,16,29,27,17,27,8,25--></div>
+							</li>
+
+							<li class="sparkline-row">
+								<h4 class="green"><span>Reviews</span> 223</h4>
+								<div class="sparkline big" data-color="green"><!--23,11,18,20,3,3,13,18,26,14,19,7--></div>
+							</li>
+
+							<li class="sparkline-row">
+								<h4 class="red"><span>New visits</span> 7930</h4>
+								<div class="sparkline big"><!--3,28,9,8,23,16,5,28,14,25,24,23--></div>
+							</li>
+
+						</ul>
+						{% endcomment %}
+					</div>
+				</div>
+			</div>
+			<!-- end title bar -->
+
+			<!-- start breadcrumbs -->
+			<div class="container padded">
+				<div class="row">
+
+					<!-- Breadcrumb line -->
+					<div id="breadcrumbs">
+						<div class="breadcrumb-button blue">
+							<span class="breadcrumb-label"><i class="icon-home"></i> Home</span>
+							<span class="breadcrumb-arrow"><span></span></span>
+						</div>
+
+
+						<div class="breadcrumb-button">
+							<span class="breadcrumb-label">
+								<i class="icon-link"></i> Others
+							</span>
+							<span class="breadcrumb-arrow"><span></span></span>
+						</div>
+
+
+						<div class="breadcrumb-button">
+							<span class="breadcrumb-label">
+								<i class="icon-calendar"></i> Full Calendar
+							</span>
+							<span class="breadcrumb-arrow"><span></span></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- end breadcrumbs -->
+
+			<div class="container">
 				{{ body_content|safe}}
 			</div>
-			
-			<!-- main content -->
 		</div>
+		
+
+		
+		
 	</div>
-    <div class="row-fluid">
-  <div class="span12">
-    <div class="footer">
-	....sf.f.sdsd.
-      <div>2013 &copy; Plastique Admin Theme</div>
-      <div>Carefully crafted by <a href="https://wrapbootstrap.com/user/andrei4002">andrei4002</a></div>
-    </div>
-  </div>
-</div>
-  </div>
-</section>
-
-<script type="text/html" id="template-notification">
-  <div class="notification animated fadeInLeftMiddle fast{{ item.itemClass }}">
-    <div class="left">
-      <div style="background-image: url({{ item.imagePath }})" class="{{ item.imageClass }}"></div>
-    </div>
-    <div class="right">
-      <div class="inner">{{ item.text }}</div>
-      <div class="time">{{ item.time }}</div>
-    </div>
-
-    <i class="icon-remove-sign hide"></i>
-  </div>
-</script>
-<script type="text/html" id="template-notifications">
-  <div class="container">
-    <div class="row" id="notifications-wrapper">
-      <div id="notifications" class="{{ bootstrapPositionClass }} notifications animated">
-        <div id="dismiss-all" class="dismiss-all button blue">Dismiss all</div>
-        <div id="content">
-          <div id="notes"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</script>
-
-<!-- model used for general things -->
-<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-header">
-    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    	<h3 id="myModalLabel"></h3>
-  	</div>
-  	<div class="modal-body">
-    	<p></p>
-  	</div>
-  	<div class="modal-footer">
-    	<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    	<!-- <button class="btn btn-primary">Save changes</button> -->
-  	</div>
-</div>
-<!-- end modal-- >
-
-
-
-<!-- model used for primary forms things -->
-<div id="primary_form_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="primary_form_modal_label" aria-hidden="true">
-	<form id="" class="fill-up" action="">
-		<div class="modal-header">
-	    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-	    	<h3 id="primary_form_modal_label"></h3>
-	  	</div>
-	  	<div class="modal-body">
-	    	<p></p>
-	  	</div>
-	  	<div class="modal-footer">
-	    	<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-	    	<button class="btn btn-primary">Save changes</button>
-	  	</div>
-
-	</form>
-</div>
-<!-- end modal-- >
-
-
-
-
 </body>
 </html>

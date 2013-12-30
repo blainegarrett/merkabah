@@ -1,0 +1,27 @@
+<form class="fill-up" action="?" method="POST">
+	<div class="row">
+		<div class="col-lg-4">
+			<div class="box">
+				<div class="box-header">
+					<span class="title">Login</span>
+				</div>
+				
+				{% if error %}
+					<div class="alert alert-error">{{ error }}</div>
+				{% endif %}
+				
+				<ul class="padded separate-sections">
+					<li class="input">
+						<input type="text" name="username" class="form-controlx input-lg" placeholder="Username">
+					</li>
+					<li class="input">
+						<input type="password" name="password" class="form-controlx input-lg" placeholder="Password">
+					</li>
+				</ul>
+
+				<input name="return_url" value="{{ return_url }}" type="hidden" />
+				<input type="submit" class="btn btn-primary" value="Login" />
+			</div>
+		</div>
+	</div>
+</form>

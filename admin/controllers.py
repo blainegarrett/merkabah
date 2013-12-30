@@ -9,14 +9,18 @@ from merkabah.core.controllers import MerkabahDjangoController
 from merkabah.core.auth.decorators import login_required
 
 from merkabah.core import controllers as merkabah_controllers
+from merkabah.core import auth as auth_api
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 
 #from google.appengine.api import users
 #from google.appengine.ext import ndb
 #from django.core import urlresolvers
-from google.appengine.api import users as gusers
+
 import settings
 #from django.http import HttpResponse, HttpResponseNotAllowed
+
 
 class PluginLoadingFailed(Exception):
     pass
@@ -36,10 +40,6 @@ class MerkabahAdminBaseController(MerkabahDjangoController):
         Populate a set of primary menu options for the whole of the admin
         """
         context['primary_menu'] = settings.ADMIN_PRIMARY_MENU
-        
-        # TODO: This should be done in the middleware...
-        guser = gusers.get_current_user()
-        context['user'] = guser
 
     def process_yodal(self, request, context, *args, **kwargs):
         return merkabah_controllers.RedirectResponse('http://google.com')
@@ -140,7 +140,42 @@ class PluginActionCtrl(PluginBaseCtrl):
     template = 'merkabah/admin/plugin_index.html'
 
 
+class AuthLoginCtrl(MerkabahDjangoController):
+    chrome_template = 'merkabah/admin/chrome.html'
+    require_login = False
+    template = 'merkabah/admin/login.html'
+    view_name = 'cmd_auth_login'
 
-        
-        
-        
+    def process_request(self, request, context, *args, **kwargs):
+
+        context['return_url'] = request.REQUEST.get('return_url', '/') # DEFAULT LANDING PAGE
+        if request.POST:
+
+            username = request.POST['username']
+            password = request.POST['password']
+
+            # Step 2: Authenticate User from un/pw authentication methods
+            user = auth_api.authenticate(username=username, password=password)
+
+            if user:
+                auth_api.login(request, user, user.USED_LOGIN)
+
+                redirect_url = '/' # DEFAULT LANDING PAGE
+                if 'return_url' in request.POST:
+                    redirect_url = request.POST.get('return_url')
+
+                if not redirect_url:
+                    redirect_url = '/' # DEFAULT LANDING PAGE
+                return HttpResponseRedirect(redirect_url)
+            else:
+                context['error'] = 'Username/Password combo does not exist.'
+
+
+class AuthLogoutCtrl(MerkabahDjangoController):
+    chrome_template = 'merkabah/admin/chrome.html'
+    require_login = False
+    view_name = 'cmd_auth_logout'
+
+    def process_request(self, request, context, *args, **kwargs):
+        auth_api.logout(request)
+        return HttpResponseRedirect(reverse('cmd_auth_login'))
