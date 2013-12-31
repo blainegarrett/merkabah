@@ -26,13 +26,19 @@ class BaseResponse(object):
         """
         self.response_dict = {}
 
-    def get_response(self):
+    def get_response(self, request):
         """
         """
 
         self.response_dict = {'response_type': self.response_type}
         self.populate_response()
-        return json.dumps(self.response_dict)
+
+        # TODO: Repending on response type, return differently
+        if request.is_ajax():
+
+            return json.dumps(self.response_dict)
+        else:
+            raise Exception('Response types are not available for non ajax calls. TODO')
 
 
 class AlertResponse(BaseResponse):
@@ -109,6 +115,21 @@ class FormResponse(BaseResponse):
         self.response_dict['target_url'] = self.target_url
         self.response_dict['target_action'] = self.target_action
         self.response_dict['is_upload'] = self.is_upload
+
+    def get_response(self, request):
+        """
+        """
+
+        self.response_dict = {'response_type': self.response_type}
+        self.populate_response()
+
+        # TODO: Repending on response type, return differently
+        if request.is_ajax():
+            return json.dumps(self.response_dict)
+        else:
+            
+            return render_to_string('merkabah/admin/plugin/inline_form_wrapper.html',
+                self.response_dict)
 
 
 class FormDialogResponse(BaseResponse):
@@ -256,7 +277,19 @@ class MerkabahController(object):
                 return HttpResponse(rendered_chrome)
 
             else:
-                return self.action_response_helper(response)
+                result = self.action_response_helper(request, response)
+                if request.is_ajax():
+                    return result
+
+
+                rendered_content = unicode(result)
+                chrome_context = context
+                chrome_context.update({'content_title': self.content_title,
+                                        'body_content': rendered_content,
+                                        'controller': self})
+
+                result = render_to_string(self.chrome_template, chrome_context)
+                return HttpResponse(result)
 
         # Action based Responses
         action = request.REQUEST.get('action', None)
@@ -280,9 +313,9 @@ class MerkabahController(object):
 
         # If it is an instance of
         if response:
-            return self.action_response_helper(response)
+            return self.action_response_helper(request, response)
 
-    def action_response_helper(self, response):
+    def action_response_helper(self, request, response):
         if isinstance(response, (BaseResponse, list, tuple)):
             if not isinstance(response, (list, tuple)):
                 responses = [response]
@@ -290,9 +323,15 @@ class MerkabahController(object):
                 responses = response
 
             return_response_list = []
+
+            # Here we need to start parsing out response types depending on response type
             for r in responses:
-                return_response_list.append(r.get_response())
-            return HttpResponse(json.dumps({'action_response_list': return_response_list}))
+                return_response_list.append(r.get_response(request))
+
+            if request.is_ajax():
+                return HttpResponse(json.dumps({'action_response_list': return_response_list}))
+            else:
+                return 'join'.join(return_response_list)
 
     def render_html(self, request, context, *args, **kwargs):
         """

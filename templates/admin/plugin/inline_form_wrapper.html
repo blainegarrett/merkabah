@@ -1,7 +1,14 @@
-<div class="box">
-	<div class="tab-header">{{ plugin.name }}</div>
+<div class="row">
+	( {{ form_id }})
+	( {{ target_url }})
+	( {{ is_upload }})
+	<form class="fill-up" id="{{ form_id }}" method="POST" action="{{ target_url }}" {% if is_upload %} enctype="multipart/form-data"{% endif %}>
 
-	<div class="container">
-			{{ rendered_form|safe }}
-	</div>
+		{{ form|safe }}
+	
+
+		<!-- <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button> -->
+		<button class="btn btn-primary">Submit</button>
+	
+	</form>
 </div>

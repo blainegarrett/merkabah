@@ -1,29 +1,28 @@
-<div role="grid" class="dataTables_wrapper" id="DataTables_Table_0_wrapper">
-	{% if group_actions %}
-		<div class="fg-toolbar ui-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix" style="border-bottom:1px solid silver;">
-			<div class="dataTables_filter" id="DataTables_Table_0_filter"><label>{{ group_actions|safe }}</label></div>
-		</div>
-	{% endif %}
-		
-	<table class="table table-striped" id="grid">
-		<thead>
-			<tr>
-			
-				{% for column in columns %}
-			  		<th>{{ column.name }}</th>
+<div class="box">
+	<div class="box-header">
+		<span class="title"></span>
+		{% if group_actions %} 
+		<ul class="box-toolbar">
+			{% comment %}<li><span class="label label-green">2 left</span></li>{% endcomment %}
+			{{ group_actions|safe }}
+		</ul>
+		{% endif %}
+	</div>
+	<div class="box-content">
+		<table class="table table-normal">
+			<thead>
+				<tr>
+					{% for column in columns %}
+					<th>{{ column.name }}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+
+			<tbody>
+				{% for row in rows %}
+				{% include 'merkabah/admin/datatable/row.html' %}
 				{% endfor %}
-
-			</tr>
-		</thead>
-		<tbody>
-		    {% for row in rows %}
-		      	{% include 'merkabah/admin/datatable/row.html' %}
-	        {% endfor %}
-		</tbody>
-	</table>
-	<div class="fg-toolbar ui-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix">
-		<div class="dataTables_filter" id="DataTables_Table_0_filter"><label>Search: <input type="text" aria-controls="DataTables_Table_0"></label></div>
-		
-		<div class="dataTables_paginate fg-buttonset ui-buttonset fg-buttonset-multi ui-buttonset-multi paging_full_numbers" id="DataTables_Table_0_paginate"><a class="first ui-corner-tl ui-corner-bl fg-button ui-button ui-state-default ui-state-disabled" tabindex="0" id="DataTables_Table_0_first">First</a><a class="previous fg-button ui-button ui-state-default ui-state-disabled" tabindex="0" id="DataTables_Table_0_previous">Previous</a><span><a class="fg-button ui-button ui-state-default ui-state-disabled" tabindex="0">1</a><a class="fg-button ui-button ui-state-default" tabindex="0">2</a><a class="fg-button ui-button ui-state-default" tabindex="0">3</a><a class="fg-button ui-button ui-state-default" tabindex="0">4</a><a class="fg-button ui-button ui-state-default" tabindex="0">5</a></span><a class="next fg-button ui-button ui-state-default" tabindex="0" id="DataTables_Table_0_next">Next</a><a class="last ui-corner-tr ui-corner-br fg-button ui-button ui-state-default" tabindex="0" id="DataTables_Table_0_last">Last</a></div></div>
-
+			</tbody>
+		</table>
+	</div>
 </div>

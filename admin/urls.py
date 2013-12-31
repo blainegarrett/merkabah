@@ -7,10 +7,9 @@ from merkabah.admin import controllers as ac
 urlpatterns = patterns('',
 
     # Main index of the admin controller
-    url(r'^$', *ac.IndexCtrl.django_url_args()),
+    url(r'^$', ac.IndexCtrl.as_django_view(), name=ac.IndexCtrl.view_name),
 
     # Auth
-
     url(r'^auth/login/$', ac.AuthLoginCtrl.as_django_view(), name=ac.AuthLoginCtrl.view_name),
     url(r'^auth/logout/$', ac.AuthLogoutCtrl.as_django_view(), name=ac.AuthLogoutCtrl.view_name),
 
