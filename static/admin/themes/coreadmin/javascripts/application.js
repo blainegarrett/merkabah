@@ -24541,8 +24541,8 @@ $.effects.effect.transfer = function( o, done ) {
  * limitations under the License.
  * ========================================================= */
 
-
 !function( $ ) {
+
 
     function UTCDate(){
         return new Date(Date.UTC.apply(Date, arguments));
@@ -25651,6 +25651,7 @@ $.effects.effect.transfer = function( o, done ) {
         var args = Array.apply(null, arguments);
         args.shift();
         return this.each(function () {
+            console.log('asdf');
             var $this = $(this),
                 data = $this.data('datetimepicker'),
                 options = typeof option == 'object' && option;
@@ -25753,6 +25754,7 @@ $.effects.effect.transfer = function( o, done ) {
                 dateUTC.setMilliseconds(0);
                 return dateUTC;
             }
+
             if (/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(date)) {
                 format = this.parseFormat('yyyy-mm-dd', type);
             }
@@ -25858,6 +25860,7 @@ $.effects.effect.transfer = function( o, done ) {
             return date;
         },
         formatDate: function(date, format, language, type){
+            console.log('super duper')
             if (date == null) {
                 return '';
             }
