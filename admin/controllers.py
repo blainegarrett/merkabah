@@ -65,6 +65,7 @@ class PluginBaseCtrl(MerkabahAdminBaseController):
 
     def load_plugin(self, plugin_slug, request, context, *args, **kwargs):
         """
+        http://www.purplemath.com/modules/strtlneq.htm
         Given a plugin slug, attempt to load it and then process the request
         """
 
@@ -94,7 +95,7 @@ class PluginBaseCtrl(MerkabahAdminBaseController):
         action_method_name = 'process_%s' % action
 
         if not hasattr(p, action_method_name):
-            'Plugin module %s does not have method %s'
+            m = 'Plugin module %s does not have method %s'
             raise PluginLoadingFailed(m % (p, action_method_name))
 
         action_method = getattr(p, action_method_name)
