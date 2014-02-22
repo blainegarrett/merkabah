@@ -136,12 +136,12 @@ class PluginIndexCtrl(PluginBaseCtrl):
     """
 
     view_name = 'admin_plugin_index'
-    #template = 'merkabah/admin/plugin_index.html'
+    template = 'merkabah/admin/plugin_index.html'
 
 
 class PluginActionCtrl(PluginBaseCtrl):
     view_name = 'admin_plugin_action'
-    #template = 'merkabah/admin/plugin_index.html'
+    template = 'merkabah/admin/plugin_index.html'
 
 
 class AuthLoginCtrl(MerkabahDjangoController):
