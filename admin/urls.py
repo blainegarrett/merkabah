@@ -14,8 +14,8 @@ urlpatterns = patterns('',
     url(r'^auth/logout/$', ac.AuthLogoutCtrl.as_django_view(), name=ac.AuthLogoutCtrl.view_name),
 
     # Plugin Controller Endpoints
-    url(r'^plugin/(?P<plugin_slug>[A-Za-z0-9-_]+)/$', *ac.PluginIndexCtrl.django_url_args()),
-    url(r'^plugin/(?P<plugin_slug>[A-Za-z0-9-_]+)/(?P<action>[A-Za-z0-9-_]+)/$', *ac.PluginActionCtrl.django_url_args()),
+    url(r'^plugin/(?P<plugin_slug>[A-Za-z0-9-_]+)/$', ac.PluginIndexCtrl.as_django_view(), name=ac.PluginIndexCtrl.view_name),
+    url(r'^plugin/(?P<plugin_slug>[A-Za-z0-9-_]+)/(?P<action>[A-Za-z0-9-_]+)/$', ac.PluginActionCtrl.as_django_view(), name=ac.PluginActionCtrl.view_name),
 
 
 #    url(r'^plugin/(?P<plugin>[A-Za-z0-9-_/:]+)/$', *admin_views.PluginCtrl.django_url_args()),   

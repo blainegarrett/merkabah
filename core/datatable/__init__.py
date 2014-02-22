@@ -15,11 +15,11 @@ class DatatableColumn(object):
         output += '</tr>'
         return output
         
-    def render_content(self, obj):
+    def render_content(self, obj, context):
         return getattr(obj, self.id)
         
-    def render_cell(self, obj):
-        return '<td>%s</td>' % self.render_content(obj)
+    def render_cell(self, obj, context):
+        return '<td>%s</td>' % self.render_content(obj, context)
 
 class Datatable(object):
     template = 'merkabah/admin/datatable/datatable.html'
@@ -77,11 +77,11 @@ class Datatable(object):
         return render_to_string('merkabah/admin/datatable/row.html', {'row': row})
     
     def get_row_cells(self, obj):
-        return [column.render_cell(obj) for column in self.columns]
+        return [column.render_cell(obj, self.context) for column in self.columns]
         
     def render(self):
         if hasattr(self, 'group_actions'):
-            self.context['group_actions'] = self.group_actions.render_content()
+            self.context['group_actions'] = self.group_actions.render_content(self.context)
 
         self.context['entities'] = self.entities
         
