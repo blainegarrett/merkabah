@@ -127,7 +127,7 @@ class FormResponse(BaseResponse):
         if request.is_ajax():
             return json.dumps(self.response_dict)
         else:
-            
+
             return render_to_string('merkabah/admin/plugin/inline_form_wrapper.html',
                 self.response_dict)
 
@@ -252,7 +252,7 @@ class MerkabahController(object):
 
         context = kwargs.pop('context', {})
 
-        context['user'] = request._cached_user
+        context['user'] = getattr(request, '_cached_user', None) # Should be anon user?
 
         # Check process response
 

@@ -24,18 +24,20 @@ class LoginRequired(object):
     def __call__(self, *args, **kwd):
 
         request = args[0] # Really
-        user = request._cached_user # Set in middleware
+
+        # Put user from middleware in context
+        user = getattr(request, '_cached_user', None) # Should this be an anon user?
+
         if user and user.is_authenticated():
             return self.func(*args, **kwd)
-        
-        return_url = request.META['PATH_INFO'] + '?'+ request.META['QUERY_STRING']
+
+        return_url = request.META['PATH_INFO'] + '?' + request.META['QUERY_STRING']
         query = 'return_url=%s' % urllib.quote_plus(return_url)
 
         base_url = reverse('cmd_auth_login')
-        
+
         redirect_url = '%s?%s' % (base_url, query)
         return HttpResponseRedirect(redirect_url)
-
 
 
 class NoLogin(object):
@@ -51,6 +53,7 @@ class NoLogin(object):
     def __call__(self, *args, **kwd):
         return self.func(*args, **kwd)
 
+
 def nologin_required(ctrl, f, *args, **kwargs):
     """
     Simple Decorator to not login
@@ -64,7 +67,7 @@ def login_required(ctrl, f, *args, **kwargs):
     """
     return decorators.decorator_apply(LoginRequired, f)
 
-    
+
 '''
 class login_required(BaseDecorator):
     """
@@ -96,4 +99,4 @@ class login_required(BaseDecorator):
             raise auth.AuthorizationRequired('User is suspended')
 
         return BaseDecorator.call(self, request, *args, **kwargs)
-'''   
+'''

@@ -4,11 +4,14 @@ from merkabah.core.entities import log_event
 from django.contrib import auth as django_auth
 from google.appengine.ext import ndb
 
+SESSION_KEY = 'merkabah_SESSID'
+
 # Authentication Interfaces
+
+
 def authenticate(**credentials):
     return django_auth.authenticate(**credentials)
 
-SESSION_KEY = 'merkabah_SESSID'
 
 def login(request, user, login_obj):
     """
@@ -27,6 +30,7 @@ def login(request, user, login_obj):
     # TODO: Fire of login event
     request.user = user
 
+
 def logout(request):
     request.session.terminate()
     if hasattr(request, 'user'):
@@ -34,8 +38,10 @@ def logout(request):
     if hasattr(request, '_cached_user'):
         del request._cached_user
 
+
 def get_user(request):
-    from merkabah.core.auth.models import User, AnonymousUser
+    from merkabah.core.auth.models import AnonymousUser
+
     user = AnonymousUser()
 
     if request.session.get(SESSION_KEY, None):
@@ -44,10 +50,11 @@ def get_user(request):
         if user_key_name:
             user = ndb.Key('User', user_key_name).get()
 
-    # Do additional checks here for IPbans, user bans, etc        
     if not user:
-        user = AnonymousUser()    
+        user = AnonymousUser()
     try:
+        # Do additional checks here for IPbans, user bans, etc
+
         pass
     except:
         return AnonymousUser()
@@ -64,18 +71,6 @@ def get_login_by_user_and_type(user, auth_type):
 
     login = l_key.get()
     return login
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class AuthenticationError(Exception):
@@ -107,7 +102,7 @@ def get_users(cursor=None):
     """
     q = auth_models.User.query()
     return q.fetch()
-    
+
 
 def create_user(username, email, first_name, last_name, creator=None):
     u = auth_models.User(username=username,
