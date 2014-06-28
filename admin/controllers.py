@@ -105,7 +105,6 @@ class PluginBaseCtrl(MerkabahAdminBaseController):
 
         # Process response...
         result = action_method(request, context, *args, **kwargs)
-
         return result
 
     def process_request(self, request, context, *args, **kwargs):
