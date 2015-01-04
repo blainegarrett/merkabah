@@ -100,16 +100,19 @@ class DialogResponse(BaseResponse):
 class FormResponse(BaseResponse):
     response_type = 'form'
 
-    def __init__(self, form, id, title, target_url, target_action, is_upload=False):
+    def __init__(self, form, id, title, target_url, target_action, is_upload=False,
+                 template='merkabah/admin/plugin/inline_form_wrapper.html'):
         self.form = form
         self.id = id
         self.title = title
         self.target_url = target_url
         self.target_action = target_action
         self.is_upload = is_upload
+        self.template = template
 
     def populate_response(self):
         self.response_dict['form'] = self.form.as_bootstrap()
+        self.response_dict['form_node'] = self.form
         self.response_dict['form_id'] = self.id
         self.response_dict['title'] = self.title
         self.response_dict['target_url'] = self.target_url
@@ -128,8 +131,7 @@ class FormResponse(BaseResponse):
             return json.dumps(self.response_dict)
         else:
 
-            return render_to_string('merkabah/admin/plugin/inline_form_wrapper.html',
-                self.response_dict)
+            return render_to_string(self.template, self.response_dict)
 
 
 class FormDialogResponse(BaseResponse):
@@ -262,7 +264,8 @@ class MerkabahController(object):
         #   it is likely a angular template url or a redrect, etc.
 
         if response:
-            if isinstance(response, (HttpResponsePermanentRedirect, HttpResponseRedirect)):
+            if isinstance(response, (HttpResponsePermanentRedirect, HttpResponseRedirect, HttpResponse)):
+                # Note: HttpResponse was added to handle json results dumped directly to output
                 return response
 
             if isinstance(response, TemplateResponse):

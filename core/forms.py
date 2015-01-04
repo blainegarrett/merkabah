@@ -8,6 +8,7 @@ from django.utils.encoding import StrAndUnicode, smart_unicode, force_unicode
 from django.utils.safestring import mark_safe
 
 class MerkabahBaseForm(forms.Form):
+    
     def __init__(self, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
         self.setup(*args, **kwargs)
