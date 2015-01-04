@@ -23,7 +23,7 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
 		{ name: 'styles' },
 		{ name: 'colors' },
-		{ name: 'WPMore' }
+		{ name: 'WPMore' },
 		{ name: 'about' }
 	];
 
@@ -32,6 +32,7 @@ CKEDITOR.editorConfig = function( config ) {
 	config.removeButtons = 'Underline,Subscript,Superscript';
 	config.extraPlugins = 'wpmore';
 
+    config.entities = false;
 
 	// Se the most common block elements.
 	config.format_tags = 'p;h1;h2;h3;pre';

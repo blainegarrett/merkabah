@@ -337,6 +337,9 @@ class MerkabahController(object):
         """
         Render the HTML
         """
+        context.update({'content_title': self.content_title,
+            'controller': self})
+
         rendered_content = render_to_string(self.template, context)
         chrome_context = context
         chrome_context.update({'content_title': self.content_title,
